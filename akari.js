@@ -3,9 +3,6 @@
 class AkariCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.value = -1; // Given value of cell
-    this.clueCertainty = false; // Do we know for sure if the cell contains a true or false clue?
-    this.realClue = false; // If clueCertainty == true, Is the cell a real clue or a false clue?
     this.auxMark = false; // Presence of an auxiliary mark (i.e. no lamp, no wall)
     this.wall = false; // Presence of wall in cell
     this.lamp = false; // Presence of lamp in cell
@@ -13,21 +10,12 @@ class AkariCell extends Cell {
   }
 
   illuminate() {
-    this.clueCertainty = true; // We are certain that any given clues are false
-    this.realClue = false;
     this.illuminated = true;
     this.wall = false;
   }
 
-  // Mark a cell as uncertain
-  markUncertain() {
-    this.clueCertainty = false;
-  }
-
-  // Mark a ceil as known not a wall, but that's it
+  // Mark a ceil as unknown shading
   markVague() {
-    this.clueCertainty = true;
-    this.realClue = false;
     this.auxMark = false;
     this.wall = false;
     this.lamp = false;
@@ -35,8 +23,6 @@ class AkariCell extends Cell {
 
   // Mark a cell as known not a wall, not a lamp
   markAux() {
-    this.clueCertainty = true; // We are certain that any givens are false
-    this.realClue = false; // Any givens in this cell are false
     this.auxMark = true;
     this.wall = false;
     this.lamp = false;
@@ -44,38 +30,63 @@ class AkariCell extends Cell {
 
   // Mark a cell as a lamp
   markLamp() {
-    this.clueCertainty = true;
-    this.realClue = false;
     this.lamp = true;
     this.wall = false;
+    this.auxMark = false;
   }
 
   // Mark a cell as a wall
   markWall() {
-    this.clueCertainty = true; // We are certain that any given clues are true
-    this.realClue = true;
     this.auxMark = false;
     this.wall = true;
     this.lamp = false;
     this.illuminated = false;
   }
 
+  // Cycle between shading styles for a cell: Uncertain, wall, lamp, unshaded
+  toggleShading(leftClick = true) {
+    if (!this.lamp && !this.wall && !this.auxMark) {
+      leftClick ? this.markWall() : this.markAux();
+    } else if (this.wall) {
+      leftClick ? this.markLamp() : this.markVague();
+    } else if (this.lamp) {
+      leftClick ? this.markAux() : this.markWall();
+    } else {
+      leftClick ? this.markVague() : this.markLamp();
+    }
+  }
+
   // Update cell's html representation
   update() {
     this.node.innerHTML = "";
-    if (
-      (!this.clueCertainty && ~this.value) ||
-      (this.clueCertainty && this.realClue && ~this.value)
-    ) {
-      this.node.innerText = String(this.value);
-    }
+
     // Clear CSS classes and re-assign
     this.node.className = "akari cell";
     this.wall && this.node.classList.add("wall");
     this.lamp && this.node.classList.add("lamp");
-    this.illuminated && this.node.classList.add("illuminated");
+    (this.lamp || this.illuminated) && this.node.classList.add("illuminated");
     this.auxMark && this.node.classList.add("marked");
-    this.node.classList.add(this.clueCertainty ? "certain" : "uncertain");
+    !this.auxMark &&
+      !this.wall &&
+      !this.lamp &&
+      this.node.classList.add("uncertain");
+
+    // If there is a value in the cell, indicate the truth status of that clue
+    // If the clue is known true, add a circle div
+    if (~this.value) {
+      this.node.innerText = String(this.value);
+      this.node.classList.add("clue");
+      if (this.clueCertainty) {
+        if (!this.realClue) {
+          this.node.classList.add("false");
+        } else {
+          this.node.classList.add("true");
+          const truthRing = document.createElement("div");
+          truthRing.classList.add("true", "clue");
+          this.node.appendChild(truthRing);
+        }
+      }
+    }
 
     // If there is a lamp in the cell, add a big circle
     if (this.lamp) {
@@ -85,7 +96,7 @@ class AkariCell extends Cell {
     }
 
     // If there is an auxiliary mark in the cell, add a small green circle
-    if (this.auxMark && this.clueCertainty) {
+    if (this.auxMark) {
       const dot = document.createElement("div");
       dot.classList.add("marked");
       this.node.appendChild(dot);
@@ -96,30 +107,8 @@ class AkariCell extends Cell {
 class Akari extends Puzzle {
   constructor(parent) {
     super(parent);
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.columns; col++) {
-        const newCell = new AkariCell(row, col);
-        newCell.node.addEventListener("click", (event) => {
-          event.preventDefault();
-          this.clickCell(newCell);
-        });
-        newCell.node.addEventListener("contextmenu", (event) => {
-          event.preventDefault();
-          this.clickCell(newCell, false);
-        });
-        this.board[row][col] = newCell;
-      }
-    }
-    this.populateNeighbors();
-  }
-
-  // Initialize the puzzle with givens
-  populate(array) {
-    for (let row = 0; row < array.length; row++) {
-      for (let col = 0; col < array[0].length; col++) {
-        this.board[row][col].value = array[row][col];
-      }
-    }
+    this.cellType = AkariCell;
+    this.initializeCells();
   }
 
   // Return a list of all cells with lamps
@@ -247,7 +236,7 @@ class Akari extends Puzzle {
         if (!~newCell) {
           break;
         }
-        if (newCell.clueCertainty && !newCell.wall) {
+        if (newCell.auxMark) {
           newCell.illuminate();
         } else {
           break;
@@ -261,7 +250,7 @@ class Akari extends Puzzle {
         if (!~newCell) {
           break;
         }
-        if (newCell.clueCertainty && !newCell.wall) {
+        if (newCell.auxMark) {
           newCell.illuminate();
         } else {
           break;
@@ -275,7 +264,7 @@ class Akari extends Puzzle {
         if (!~newCell) {
           break;
         }
-        if (newCell.clueCertainty && !newCell.wall) {
+        if (newCell.auxMark) {
           newCell.illuminate();
         } else {
           break;
@@ -289,7 +278,7 @@ class Akari extends Puzzle {
         if (!~newCell) {
           break;
         }
-        if (newCell.clueCertainty && !newCell.wall) {
+        if (newCell.auxMark) {
           newCell.illuminate();
         } else {
           break;
@@ -305,39 +294,19 @@ class Akari extends Puzzle {
     cell.lamp = true;
   }
 
-  // Update the table element
-  update() {
-    this.illuminateBoard();
-    // Clear existing grid
-    this.node.innerHTML = "";
-    for (let row of this.board) {
-      const newRow = document.createElement("tr");
-      for (let cell of row) {
-        cell.update();
-        newRow.appendChild(cell.node);
-      }
-      const padding = document.createElement("td");
-      padding.classList.add("table-padding");
-      newRow.appendChild(padding);
-      this.node.appendChild(newRow);
-    }
-  }
-
   // What happens when a cell is clicked in Akari:
-  // Toggle between the following conditions:
-  // Uncertain, certain but indetermined, certain wall, certain lamp, certain unmarked
-  clickCell(cell, forward = true) {
-    if (!cell.clueCertainty) {
-      forward ? cell.markVague() : cell.markAux();
-    } else if (!cell.wall && !cell.auxMark && !cell.lamp) {
-      forward ? cell.markWall() : cell.markUncertain();
-    } else if (cell.wall) {
-      forward ? cell.markLamp() : cell.markVague();
-    } else if (cell.lamp) {
-      forward ? cell.markAux() : cell.markWall();
+  // If cell has a number in it:
+  // Left click cycles between uncertain shading, wall, lamp, unshaded
+  // Right click cycles between uncertain clue, certain true clue, certain false clue
+  // If cell does not have a number in it:
+  // Left and right click cycle between uncertain, wall, lamp, unshaded
+  clickCell(cell, event, leftClick = true) {
+    if (~cell.value) {
+      leftClick ? cell.toggleShading() : cell.toggleCertainty();
     } else {
-      forward ? cell.markUncertain() : cell.markLamp();
+      cell.toggleShading(leftClick);
     }
+    this.illuminateBoard();
     this.update();
   }
 }

@@ -11,6 +11,7 @@ class Octathlon {
     this.kurodoko = new Kurodoko(this);
     this.masyu = new Masyu(this);
     this.nurikabe = new Nurikabe(this);
+    this.nurikoro = new Nurikoro(this);
     this.shikaku = new Shikaku(this);
     this.slitherlink = new Slitherlink(this);
 

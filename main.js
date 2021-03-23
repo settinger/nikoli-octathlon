@@ -37,6 +37,35 @@ $container.appendChild(kurodokoDiv);
 game.kurodoko.populate(nurikabeGivens);
 game.kurodoko.update();
 
+// Nurikabe grid in row 1 column 4
+const nurikabeDiv = document.createElement("div");
+nurikabeDiv.style.gridColumn = 4;
+nurikabeDiv.style.gridRow = 1;
+nurikabeDiv.classList.add("puzzle", "nurikabe");
+nurikabeDiv.innerHTML = `
+<div class="puzzleName">Nurikabe</div>
+<div class="rules">Sum clues with Kurodoko clues<br/>
+Nurikabe shaded cells are Fillomino liars</div>`;
+nurikabeDiv.appendChild(game.nurikabe.node);
+$container.appendChild(nurikabeDiv);
+game.nurikabe.populate(nurikabeGivens);
+game.nurikabe.update();
+
+// Nuri-koro grid in row 2 column 4
+// Nurikabe grid in row 1 column 4
+const nurikoroDiv = document.createElement("div");
+nurikoroDiv.style.gridColumn = 4;
+nurikoroDiv.style.gridRow = 2;
+nurikoroDiv.classList.add("puzzle", "nurikabe");
+nurikoroDiv.innerHTML = `
+<div class="puzzleName">Nurikabe+Kurodoko</div>
+<div class="rules">Clues are sum of Nurikabe and Kurodoko clues<br/>
+Nurikabe shaded cells are Fillomino liars</div>`;
+nurikoroDiv.appendChild(game.nurikoro.node);
+$container.appendChild(nurikoroDiv);
+game.nurikoro.populate(nurikabeGivens);
+game.nurikoro.update();
+
 const akariDiv = document.createElement("div");
 akariDiv.style.gridColumn = 1;
 akariDiv.style.gridRow = 2;

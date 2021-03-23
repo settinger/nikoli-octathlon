@@ -1,40 +1,8 @@
 class ShikakuCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.clueCertainty = false;
-    this.realClue = false;
-    this.value = -1;
     this.walls = { top: false, left: false, right: false, bottom: false };
     this.bridges = { top: false, left: false, right: false, bottom: false };
-  }
-
-  // Mark a cell's clue as known-true or known-false
-  markCertain() {
-    this.clueCertainty = true;
-  }
-  markUncertain() {
-    this.clueCertainty = false;
-  }
-  markTrue() {
-    this.clueCertainty = true;
-    this.realClue = true;
-  }
-  markFalse() {
-    this.clueCertainty = true;
-    this.realClue = false;
-  }
-
-  // Toggle certainty of cell
-  // Possible options: Uncertain; certain and clue is false; certain and clue is true
-  toggleCertainty(forward = true) {
-    if (!this.clueCertainty) {
-      this.clueCertainty = true;
-      this.realClue = forward;
-    } else if (this.clueCertainty && this.realClue) {
-      forward ? (this.realClue = false) : (this.clueCertainty = false);
-    } else {
-      forward ? (this.clueCertainty = false) : (this.realClue = true);
-    }
   }
 
   // Add or remove a wall
@@ -58,7 +26,7 @@ class ShikakuCell extends Cell {
       this.neighbors.right.bridges.left = false;
     }
     if (direction == "bottom" && ~this.neighbors.bottom) {
-      this.walls.bottom = !cell.walls.bottom;
+      this.walls.bottom = !this.walls.bottom;
       this.bridges.bottom = false;
       this.neighbors.bottom.walls.top = !this.neighbors.bottom.walls.top;
       this.neighbors.bottom.bridges.top = false;
@@ -96,12 +64,7 @@ class ShikakuCell extends Cell {
   // Update cell's html representation
   update() {
     this.node.innerHTML = "";
-    if (
-      (!this.clueCertainty && ~this.value) ||
-      (this.clueCertainty && this.realClue && ~this.value)
-    ) {
-      this.node.innerText = String(this.value);
-    }
+
     // Clear CSS classes and re-assign
     this.node.className = "shikaku cell";
     this.walls.top && this.node.classList.add("topwall");
@@ -112,7 +75,24 @@ class ShikakuCell extends Cell {
     this.bridges.left && this.node.classList.add("leftbridge");
     this.bridges.right && this.node.classList.add("rightbridge");
     this.bridges.bottom && this.node.classList.add("bottombridge");
-    this.node.classList.add(this.clueCertainty ? "certain" : "uncertain");
+    //this.node.classList.add(this.clueCertainty ? "certain" : "uncertain");
+
+    // If there is a value in the cell, indicate the truth status of that clue
+    // If the clue is known true, add a circle div
+    if (~this.value) {
+      this.node.innerText = String(this.value);
+      this.node.classList.add("clue");
+      if (this.clueCertainty) {
+        if (!this.realClue) {
+          this.node.classList.add("false");
+        } else {
+          this.node.classList.add("true");
+          const truthRing = document.createElement("div");
+          truthRing.classList.add("true", "clue");
+          this.node.appendChild(truthRing);
+        }
+      }
+    }
 
     // If there is a bridge in the cell, add a bridge div
     if (this.bridges.top) {
@@ -141,59 +121,24 @@ class ShikakuCell extends Cell {
 class Shikaku extends Puzzle {
   constructor(parent) {
     super(parent);
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.columns; col++) {
-        const newCell = new ShikakuCell(row, col);
-        newCell.walls = {
-          top: row == 0,
-          left: col == 0,
-          right: col == this.columns - 1,
-          bottom: row == this.rows - 1,
-        };
-        newCell.node.addEventListener("click", (e) =>
-          this.leftClick(e, newCell)
-        );
-        newCell.node.addEventListener("contextmenu", (e) =>
-          this.rightClick(e, newCell)
-        );
-        this.board[row][col] = newCell;
-      }
-    }
-    this.populateNeighbors();
-  }
+    this.cellType = ShikakuCell;
+    this.initializeCells();
 
-  // Initialize the puzzle with givens
-  populate(array) {
-    for (let row = 0; row < array.length; row++) {
-      for (let col = 0; col < array[0].length; col++) {
-        this.board[row][col].value = array[row][col];
-      }
+    // Add initial wall state
+    for (let cell of this.board.flat()) {
+      cell.walls = {
+        top: cell.row == 0,
+        left: cell.column == 0,
+        right: cell.column == this.columns - 1,
+        bottom: cell.row == this.rows - 1,
+      };
     }
   }
 
-  // Update the table element
-  update() {
-    // clear existing grid
-    this.node.innerHTML = "";
-    for (let row of this.board) {
-      const newRow = document.createElement("tr");
-      for (let cell of row) {
-        cell.update();
-        newRow.appendChild(cell.node);
-      }
-      const padding = document.createElement("td");
-      padding.classList.add("table-padding");
-      newRow.appendChild(padding);
-      this.node.appendChild(newRow);
-    }
-  }
-
-  // What to do when a cell is left-clicked
-  // If configured to mark vertices, toggle the walls
-  // If configured to mark cells, toggle the cell certainty
-  leftClick(event, cell) {
-    event.preventDefault();
-
+  // What to do when a cell is clicked
+  // If configured to mark vertices: left click toggles walls, right click toggles bridges
+  // If configured to mark cells and cell has clue, toggle clue certainty
+  clickCell(cell, event, leftClick = true) {
     if (this.parent.markVertices) {
       // Get coordinate of event within cell
       let [x, y] = [
@@ -202,45 +147,19 @@ class Shikaku extends Puzzle {
       ];
       // Figure out if event is in the top, left, right, or bottom of cell
       if (x < 0 && -x > Math.abs(y)) {
-        cell.toggleWall("left");
+        leftClick ? cell.toggleWall("left") : cell.toggleBridge("left");
       } else if (x > 0 && x > Math.abs(y)) {
-        cell.toggleWall("right");
+        leftClick ? cell.toggleWall("right") : cell.toggleBridge("right");
       } else if (y > 0 && y > Math.abs(x)) {
-        cell.toggleWall("bottom");
+        leftClick ? cell.toggleWall("bottom") : cell.toggleBridge("bottom");
       } else {
-        cell.toggleWall("top");
+        leftClick ? cell.toggleWall("top") : cell.toggleBridge("top");
       }
     } else {
-      cell.toggleCertainty();
-    }
-
-    this.update();
-  }
-
-  // What to do when right-clicked
-  // If configured to mark vertices, toggle the auxiliary marks (bridges)
-  // If configured to mark cells, toggle the cell certainty
-  rightClick(event, cell) {
-    event.preventDefault();
-
-    if (this.parent.markVertices) {
-      // Get coordinate of event within cell
-      let [x, y] = [
-        event.offsetX - cell.width / 2,
-        event.offsetY - cell.height / 2,
-      ];
-      // Figure out if event is in the top, left, right, or bottom of cell
-      if (x < 0 && -x > Math.abs(y)) {
-        cell.toggleBridge("left");
-      } else if (x > 0 && x > Math.abs(y)) {
-        cell.toggleBridge("right");
-      } else if (y > 0 && y > Math.abs(x)) {
-        cell.toggleBridge("bottom");
-      } else {
-        cell.toggleBridge("top");
+      if (!~cell.value) {
+        return;
       }
-    } else {
-      cell.toggleCertainty(false);
+      cell.toggleCertainty(leftClick);
     }
     this.update();
   }
