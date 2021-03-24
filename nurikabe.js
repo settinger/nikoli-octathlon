@@ -60,7 +60,7 @@ class Nurikabe extends Puzzle {
   // Possible statuses: Uncertain, shaded, unshaded
   clickCell(cell, event, leftClick = true) {
     if (~cell.value) return;
-    cell.toggleShading();
+    cell.toggleShading(leftClick);
     this.update();
   }
 }

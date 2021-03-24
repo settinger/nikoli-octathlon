@@ -12,15 +12,18 @@ class Cell {
     this.neighbors = { top: -1, bottom: -1, left: -1, right: -1 };
     this.node = document.createElement("td");
 
-    // Most games use the following properties
+    // Most games use some of the following properties
     this.value = -1;
     this.shaded = false;
     this.unshaded = false;
     this.clueCertainty = false;
     this.realClue = false;
+    this.loops = { top: false, left: false, right: false, bottom: false };
+    this.crosses = { top: false, left: false, right: false, bottom: false };
+    this.walls = { top: false, left: false, right: false, bottom: false };
   }
 
-  // Most games use the following methods
+  // Most games use some of the following methods
   markTrueClue() {
     this.clueCertainty = true;
     this.realClue = true;
@@ -68,6 +71,66 @@ class Cell {
       leftClick ? this.markVague() : this.markShaded();
     }
   }
+
+  // If an event occurs within the cell, get coordinates of the event
+  // [0, 0] = center of cell
+  // Positive x = right side of cell
+  // Positive y = bottom of cell
+  eventDirection(event) {
+    let [x, y] = [
+      event.offsetX - this.width / 2,
+      event.offsetY - this.height / 2,
+    ];
+    // Figure out if event is in the top, left, right, or bottom of cell
+    if (x < 0 && -x > Math.abs(y)) {
+      return { direction: "left", opposite: "right" };
+    } else if (x > 0 && x > Math.abs(y)) {
+      return { direction: "right", opposite: "left" };
+    } else if (y > 0 && y > Math.abs(x)) {
+      return { direction: "bottom", opposite: "top" };
+    } else {
+      return { direction: "top", opposite: "bottom" };
+    }
+  }
+
+  // Add or remove a wall
+  toggleWall(direction) {
+    const dir = direction.direction;
+    const opp = direction.opposite;
+    const neighbor = this.neighbors[dir];
+    if (~neighbor) {
+      this.walls[dir] = !this.walls[dir];
+      neighbor.walls[opp] = !neighbor.walls[opp];
+    }
+  }
+
+  // Cycle between loop segment options: Uncertain, loop segment, loop cross
+  toggleLoop(direction, leftClick = true) {
+    const dir = direction.direction;
+    const opp = direction.opposite;
+    const neighbor = this.neighbors[dir];
+    if (~neighbor) {
+      if (!this.loops[dir] && !this.crosses[dir]) {
+        // Option 1: Neither loop nor cross on vertex. If left-click, add loop; if right-click, add cross
+        this.loops[dir] = leftClick;
+        neighbor.loops[opp] = leftClick;
+        this.crosses[dir] = !leftClick;
+        neighbor.crosses[opp] = !leftClick;
+      } else if (this.loops[dir]) {
+        // Option 2: Loop on vertex. If left-click, change to cross; if right-click, remove loop
+        this.loops[dir] = false;
+        neighbor.loops[opp] = false;
+        this.crosses[dir] = leftClick;
+        neighbor.crosses[opp] = leftClick;
+      } else {
+        // Option 3: Cross on vertex. If left-click, remove cross; if right-click, change to loop
+        this.loops[dir] = !leftClick;
+        neighbor.loops[opp] = !leftClick;
+        this.crosses[dir] = false;
+        neighbor.crosses[opp] = false;
+      }
+    }
+  }
 }
 
 class Puzzle {
@@ -89,6 +152,13 @@ class Puzzle {
       for (let col = 0; col < this.columns; col++) {
         // Initialize a new cell
         let newCell = new this.cellType(row, col);
+        // Initialize boundary grid walls (not all puzzles use this)
+        newCell.walls = {
+          top: row == 0,
+          bottom: row == this.rows - 1,
+          left: col == 0,
+          right: col == this.columns - 1,
+        };
 
         // Add left-click and right-click events for cell
         newCell.node.addEventListener("click", (event) => {

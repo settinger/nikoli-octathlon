@@ -33,6 +33,7 @@
   width: 90%;
   position: relative;
   user-select: none;
+  margin: 10px;
 }
 
 /* cells inside the 10x10 grid */
@@ -71,9 +72,14 @@ td.bottomwall {
   border-bottom: 5px solid black;
 }
 
-div.topbridge {
+/* Any divs inside a cell have certain properties */
+td div {
   position: absolute;
+  pointer-events: none;
   z-index: 2;
+}
+
+div.topbridge {
   background: green;
   width: 8%;
   height: 70%;
@@ -82,8 +88,6 @@ div.topbridge {
 }
 
 div.leftbridge {
-  position: absolute;
-  z-index: 2;
   background: green;
   width: 70%;
   height: 8%;
@@ -92,8 +96,6 @@ div.leftbridge {
 }
 
 div.rightbridge {
-  position: absolute;
-  z-index: 2;
   background: green;
   width: 70%;
   height: 8%;
@@ -102,13 +104,111 @@ div.rightbridge {
 }
 
 div.bottombridge {
-  position: absolute;
-  z-index: 2;
   background: green;
   width: 8%;
   height: 70%;
   left: 46%;
   top: 65%;
+}
+
+div.toploop {
+  background: blue;
+  width: 16%;
+  height: 50%;
+  left: 42%;
+  top: 0%;
+}
+
+div.leftloop {
+  background: blue;
+  width: 50%;
+  height: 16%;
+  left: 0%;
+  top: 42%;
+}
+
+div.rightloop {
+  background: blue;
+  width: 50%;
+  height: 16%;
+  left: 50%;
+  top: 42%;
+}
+
+div.bottomloop {
+  background: blue;
+  width: 16%;
+  height: 50%;
+  left: 42%;
+  top: 50%;
+}
+
+div.topedge {
+  background: blue;
+  width: 100%;
+  height: 8%;
+  left: 0%;
+  top: -4%;
+}
+
+div.leftedge {
+  background: blue;
+  width: 8%;
+  height: 100%;
+  left: -4%;
+  top: 0%;
+}
+
+div.rightedge {
+  background: blue;
+  width: 8%;
+  height: 100%;
+  left: 96%;
+  top: 0%;
+}
+
+div.bottomedge {
+  background: blue;
+  width: 100%;
+  height: 8%;
+  left: 0%;
+  top: 96%;
+}
+
+div.topcross {
+  background: red;
+  width: 16%;
+  height: 16%;
+  left: 42%;
+  top: -8%;
+  transform: rotate(45deg);
+}
+
+div.leftcross {
+  background: red;
+  width: 16%;
+  height: 16%;
+  left: -8%;
+  top: 42%;
+  transform: rotate(45deg);
+}
+
+div.rightcross {
+  background: red;
+  width: 16%;
+  height: 16%;
+  left: 92%;
+  top: 42%;
+  transform: rotate(45deg);
+}
+
+div.bottomcross {
+  background: red;
+  width: 16%;
+  height: 16%;
+  left: 42%;
+  top: 92%;
+  transform: rotate(45deg);
 }
 
 /* Akari-specific styling */
@@ -133,10 +233,8 @@ td.akari.wall {
 }
 
 .akari div.marked {
-  position: absolute;
   top: 45%;
   left: 45%;
-  z-index: 2;
   background-color: green;
   border-radius: 50%;
   width: 10%;
@@ -156,10 +254,8 @@ td.akari.wall {
 }
 
 .akari :not(.wall) div.true {
-  position: absolute;
   top: 5%;
   left: 5%;
-  z-index: 2;
   width: 90%;
   height: 90%;
   border: 2px solid black;
@@ -167,14 +263,47 @@ td.akari.wall {
 }
 
 .akari .wall div.true {
-  position: absolute;
   top: 5%;
   left: 5%;
-  z-index: 2;
   width: 90%;
   height: 90%;
   border: 2px solid white;
   border-radius: 50%;
+}
+
+/* Corral specific styling */
+.corral td {
+  border: 1px dashed black;
+}
+
+.corral .shaded {
+  background-color: greenyellow;
+}
+
+.corral .unshaded {
+  background-color: yellow;
+}
+
+/* Country Road specific styling */
+.countryroad.clue {
+  font-size: 0.6em;
+  font-weight: normal;
+}
+
+/* Fillomino specific styling */
+.fillomino div.true {
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+.fillomino .false {
+  color: white;
+  text-shadow: -1px 1px 0 black, 1px 1px 0 black, 1px -1px 0 black,
+    -1px -1px 0 black;
 }
 
 /*Heyawake specific styling */
@@ -206,10 +335,8 @@ td.akari.wall {
 }
 
 .heyawake :not(.shaded) div.true {
-  position: absolute;
   top: 5%;
   left: 5%;
-  z-index: 2;
   width: 90%;
   height: 90%;
   border: 2px solid black;
@@ -217,14 +344,29 @@ td.akari.wall {
 }
 
 .heyawake .shaded div.true {
-  position: absolute;
   top: 5%;
   left: 5%;
-  z-index: 2;
   width: 90%;
   height: 90%;
   border: 2px solid white;
   border-radius: 50%;
+}
+
+/* Hitori specific styling */
+
+.hitori td.shaded {
+  background-color: black;
+  color: white;
+}
+
+.hitori td.unshaded {
+  color: black;
+  background-color: white;
+}
+
+.hitori td:not(.shaded):not(.unshaded) {
+  color: black;
+  background-color: #dddddd;
 }
 
 /* Kurodoko specific styling */
@@ -233,8 +375,6 @@ td.akari.wall {
 }
 
 .kurodoko div.clue {
-  position: absolute;
-  z-index: 2;
   top: 5%;
   left: 5%;
   width: 90%;
@@ -246,17 +386,38 @@ td.akari.wall {
 
 .kurodoko .bounded {
   font-size: 0.5em;
+  font-weight: normal;
 }
 
 .kurodoko div.marked {
-  position: absolute;
   top: 45%;
   left: 45%;
-  z-index: 2;
   background-color: black;
   border-radius: 50%;
   width: 10%;
   height: 10%;
+}
+
+/* Masyu specific styling */
+.masyu .pearl {
+  border-radius: 50%;
+  width: 90%;
+  height: 90%;
+  top: 5%;
+  left: 5%;
+  border: 2px solid black;
+}
+
+.masyu .pearl.black {
+  background-color: black;
+}
+
+.masyu .false .pearl {
+  filter: opacity(50%);
+}
+
+.masyu .false .pearl.white {
+  background-color: #dddddd;
 }
 
 /* Nurikabe specific styling */
@@ -265,8 +426,6 @@ td.akari.wall {
 }
 
 .nurikabe div.clue {
-  position: absolute;
-  z-index: 2;
   top: 5%;
   left: 5%;
   width: 90%;
@@ -278,13 +437,12 @@ td.akari.wall {
 
 .nurikabe .bounded {
   font-size: 0.5em;
+  font-weight: normal;
 }
 
 .nurikabe div.marked {
-  position: absolute;
   top: 45%;
   left: 45%;
-  z-index: 2;
   background-color: black;
   border-radius: 50%;
   width: 10%;
@@ -293,10 +451,8 @@ td.akari.wall {
 
 /* Shikaku specific styling */
 .shikaku div.true {
-  position: absolute;
   top: 5%;
   left: 5%;
-  z-index: 2;
   width: 90%;
   height: 90%;
   border: 2px solid black;
@@ -307,4 +463,16 @@ td.akari.wall {
   color: white;
   text-shadow: -1px 1px 0 black, 1px 1px 0 black, 1px -1px 0 black,
     -1px -1px 0 black;
+}
+
+/* Slitherlink specific styling */
+.slitherlink td {
+  border: none;
+}
+
+.slitherlink div.corner {
+  background: black;
+  width: 10%;
+  height: 10%;
+  border-radius: 50%;
 }

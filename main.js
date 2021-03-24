@@ -1,5 +1,7 @@
+// Get some fixed divs
 const $container = document.getElementById("container");
 const $indicator = document.getElementById("indicator");
+$container.classList.add("mark-cells");
 $indicator.innerText = "Mark cell centers";
 
 const game = new Octathlon(10, 10);
@@ -11,6 +13,8 @@ const toggle = (e) => {
   ) {
     e.preventDefault();
     game.markVertices = !game.markVertices;
+    $container.classList.toggle("mark-cells");
+    $container.classList.toggle("mark-vertices");
     $indicator.innerText = game.markVertices
       ? "Mark cell vertices"
       : "Mark cell centers";
@@ -72,8 +76,8 @@ akariDiv.style.gridRow = 2;
 akariDiv.classList.add("puzzle", "akari");
 akariDiv.innerHTML = `
 <div class="puzzleName">Akari</div>
-<div class="rules">Black cell: real clue<br/>
-White cell: ignore number<br/>
+<div class="rules">Clue in wall: real clue<br/>
+Clue not in wall: ignore number<br/>
 Walls same as Hitori shaded cells<br/>
 Akari light bulb <-> Real Shikaku clue
 </div>
@@ -109,3 +113,80 @@ heyawakeDiv.appendChild(game.heyawake.node);
 $container.appendChild(heyawakeDiv);
 game.heyawake.populate(heyawakeGivens);
 game.heyawake.update();
+
+const countryDiv = document.createElement("div");
+countryDiv.style.gridColumn = 3;
+countryDiv.style.gridRow = 3;
+countryDiv.classList.add("puzzle", "countryroad");
+countryDiv.innerHTML = `
+<div class="puzzleName">Country Road</div>
+<div class="rules">At most one clue per room<br/>
+Same rooms as Fillomino<br/>
+Same loop as Masyu</div>`;
+countryDiv.appendChild(game.countryRoad.node);
+$container.appendChild(countryDiv);
+game.countryRoad.populate(countryRoadGivens);
+game.countryRoad.update();
+
+const fillominoDiv = document.createElement("div");
+fillominoDiv.style.gridColumn = 4;
+fillominoDiv.style.gridRow = 3;
+fillominoDiv.classList.add("puzzle", "fillomino");
+fillominoDiv.innerHTML = `
+<div class="puzzleName">Fillomino</div>
+<div class="rules">Same rooms as Country Road<br/>
+Nurikabe shaded cells are liars</div>`;
+fillominoDiv.appendChild(game.fillomino.node);
+$container.appendChild(fillominoDiv);
+game.fillomino.populate(fillominoGivens);
+game.fillomino.update();
+
+const hitoriDiv = document.createElement("div");
+hitoriDiv.style.gridColumn = 1;
+hitoriDiv.style.gridRow = 4;
+hitoriDiv.classList.add("puzzle", "hitori");
+hitoriDiv.innerHTML = `
+<div class="puzzleName">Hitori</div>
+<div class="rules">Shaded cells same as Akari walls<br/>
+Add numbers mod 10 to Slitherlink clues</div>`;
+hitoriDiv.appendChild(game.hitori.node);
+$container.appendChild(hitoriDiv);
+game.hitori.update();
+
+const slitherlinkDiv = document.createElement("div");
+slitherlinkDiv.style.gridColumn = 2;
+slitherlinkDiv.style.gridRow = 4;
+slitherlinkDiv.classList.add("puzzle", "slitherlink");
+slitherlinkDiv.innerHTML = `
+<div class="puzzleName">Slitherlink</div>
+<div class="rules">Clue in every cell<br/>
+Same loop as Corral<br/>
+Add clues mod 10 to Hitori numbers</div>`;
+slitherlinkDiv.appendChild(game.slitherlink.node);
+$container.appendChild(slitherlinkDiv);
+game.slitherlink.update();
+
+const corralDiv = document.createElement("div");
+corralDiv.style.gridColumn = 3;
+corralDiv.style.gridRow = 4;
+corralDiv.classList.add("puzzle", "corral");
+corralDiv.innerHTML = `
+<div class="puzzleName">Corral</div>
+<div class="rules">Same loop as Slitherlink<br/>
+If correct clue in Masyu, put number in Corral cell</div>`;
+corralDiv.appendChild(game.corral.node);
+$container.appendChild(corralDiv);
+game.corral.update();
+
+const masyuDiv = document.createElement("div");
+masyuDiv.style.gridColumn = 4;
+masyuDiv.style.gridRow = 4;
+masyuDiv.classList.add("puzzle", "masyu");
+masyuDiv.innerHTML = `
+<div class="puzzleName">Masyu</div>
+<div class="rules">Same loop as Country Road<br/>
+If correct clue in Masyu, put number in Corral cell</div>`;
+masyuDiv.appendChild(game.masyu.node);
+$container.appendChild(masyuDiv);
+game.masyu.populate(masyuGivens);
+game.masyu.update();
