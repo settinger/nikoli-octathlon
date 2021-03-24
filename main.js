@@ -166,6 +166,19 @@ slitherlinkDiv.appendChild(game.slitherlink.node);
 $container.appendChild(slitherlinkDiv);
 game.slitherlink.update();
 
+const hitorilinkDiv = document.createElement("div");
+hitorilinkDiv.style.gridColumn = 1;
+hitorilinkDiv.style.gridRow = 3;
+hitorilinkDiv.classList.add("puzzle", "hitori", "hitorilink");
+hitorilinkDiv.innerHTML = `
+<div class="puzzleName">Hitori + Slitherlink</div>
+<div class="rules">Slitherlink clue + Hitori clue, mod 10, equals given clue<br/>
+Same shaded cells as Akari</div>`;
+hitorilinkDiv.appendChild(game.hitorilink.node);
+$container.appendChild(hitorilinkDiv);
+game.hitorilink.populate(hitoriGivens);
+game.hitorilink.update();
+
 const corralDiv = document.createElement("div");
 corralDiv.style.gridColumn = 3;
 corralDiv.style.gridRow = 4;
@@ -190,3 +203,15 @@ masyuDiv.appendChild(game.masyu.node);
 $container.appendChild(masyuDiv);
 game.masyu.populate(masyuGivens);
 game.masyu.update();
+
+const corralsyuDiv = document.createElement("div");
+corralsyuDiv.style.gridColumn = 2;
+corralsyuDiv.style.gridRow = 3;
+corralsyuDiv.classList.add("puzzle", "corralsyu", "corral", "masyu");
+corralsyuDiv.innerHTML = `
+<div class="puzzleName">Corral + Masyu</div>
+<div class="rules">If correct clue in Masyu, copy corresponding number from full Corral grid to emtpy one</div>`;
+corralsyuDiv.appendChild(game.corralsyu.node);
+$container.appendChild(corralsyuDiv);
+game.corralsyu.populate(corralGivens, masyuGivens);
+game.corralsyu.update();

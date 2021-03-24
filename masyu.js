@@ -17,21 +17,19 @@ class MasyuCell extends Cell {
     this.crosses.left && this.node.classList.add("leftcross");
     this.crosses.right && this.node.classList.add("rightcross");
     this.crosses.bottom && this.node.classList.add("bottomcross");
-    this.shaded && this.node.classList.add("shaded");
-    this.unshaded && this.node.classList.add("unshaded");
 
     // For Masyu, ignore clueCertainty property, treat all cells as either true or false
     this.node.classList.add(this.realClue ? "true" : "false");
 
     // If cell is shaded (black pearl), add a black pearl div
-    if (this.shaded) {
+    if (~this.value && !this.value) {
       const div = document.createElement("div");
       div.classList.add("pearl", "black");
       this.node.appendChild(div);
     }
 
     // If cell is unshaded (white pearl), add a white pearl div
-    if (this.unshaded) {
+    if (~this.value && this.value) {
       const div = document.createElement("div");
       div.classList.add("pearl", "white");
       this.node.appendChild(div);
@@ -88,16 +86,6 @@ class Masyu extends Puzzle {
     super(parent);
     this.cellType = MasyuCell;
     this.initializeCells();
-  }
-
-  // Masyu does not use the default populate() method
-  populate(array) {
-    for (let row = 0; row < array.length; row++) {
-      for (let col = 0; col < array[0].length; col++) {
-        this.board[row][col].shaded = !array[row][col];
-        this.board[row][col].unshaded = !!array[row][col];
-      }
-    }
   }
 
   // When Masyu cell is clicked:

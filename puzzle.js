@@ -201,11 +201,9 @@ class Puzzle {
 
   // Initialize the cell values from a given array
   populate(array) {
-    for (let row = 0; row < array.length; row++) {
-      for (let col = 0; col < array[0].length; col++) {
-        this.board[row][col].value = array[row][col];
-      }
-    }
+    this.board.flat().forEach((cell) => {
+      cell.value = array[cell.row][cell.column];
+    });
   }
 
   // The method called when a cell is clicked

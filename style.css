@@ -4,14 +4,32 @@
   font-family: sans-serif;
 }
 
+body {
+  margin: 20px;
+}
+
 #container {
   display: grid;
   grid-gap: 5%;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
   text-align: center;
+  margin: 20px;
   padding: 4%;
   min-height: 200px;
+}
+
+.title {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#indicator {
+  padding-top: 2em;
 }
 
 /* The grid cell that holds the puzzle name, description, and puzzle grid */
@@ -400,15 +418,19 @@ td.akari.wall {
 
 /* Masyu specific styling */
 .masyu .pearl {
+  color: black;
+  background-color: white;
   border-radius: 50%;
   width: 90%;
   height: 90%;
   top: 5%;
   left: 5%;
   border: 2px solid black;
+  padding-top: 2px;
 }
 
 .masyu .pearl.black {
+  color: white;
   background-color: black;
 }
 
