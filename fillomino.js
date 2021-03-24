@@ -1,20 +1,6 @@
 class FillominoCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.bridges = { top: false, left: false, right: false, bottom: false };
-  }
-
-  // Add or remove a bridge
-  toggleBridge(direction) {
-    const dir = direction.direction;
-    const opp = direction.opposite;
-    const neighbor = this.neighbors[dir];
-    if (~neighbor) {
-      this.bridges[dir] = !this.bridges[dir];
-      this.walls[dir] = false;
-      neighbor.bridges[opp] = !neighbor.bridges[opp];
-      neighbor.walls[opp] = false;
-    }
   }
 
   // Update cell's html representation
@@ -90,11 +76,29 @@ class Fillomino extends Puzzle {
         ? cell.toggleWall(cell.eventDirection(event))
         : cell.toggleBridge(cell.eventDirection(event));
     } else {
-      if (!~cell.value) {
-        return;
-      }
       cell.toggleCertainty(leftClick);
     }
     this.update();
+
+    // Linked board updates:
+    // Fillomino true cells are Nurikabe unshaded cells
+    // Fillomino false cells are Nurikabe shaded cells
+    // Copy walls/bridges to Country Road
+    if (cell.clueCertainty && cell.realClue) {
+      this.parent.nurikabe.board[cell.row][cell.column].markUnshaded();
+      this.parent.nurikoro.board[cell.row][cell.column].markUnshaded();
+    } else if (cell.clueCertainty && !cell.realClue) {
+      this.parent.nurikabe.board[cell.row][cell.column].markShaded();
+      this.parent.nurikoro.board[cell.row][cell.column].markShaded();
+    } else {
+      this.parent.nurikabe.board[cell.row][cell.column].markVague();
+      this.parent.nurikoro.board[cell.row][cell.column].markVague();
+    }
+    this.parent.nurikabe.update();
+    this.parent.nurikoro.update();
+
+    cell.transfer(this.parent.countryRoad, "walls");
+    cell.transfer(this.parent.countryRoad, "bridges");
+    this.parent.countryRoad.update();
   }
 }

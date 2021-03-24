@@ -54,5 +54,15 @@ class Heyawake extends Puzzle {
       cell.toggleShading(leftClick);
     }
     this.update();
+
+    // Linked cell events:
+    // Copy walls to Shikaku
+    // Transfer shadedness to Kurodoko cell
+    cell.transfer(this.parent.shikaku, "walls");
+    cell.transfer(this.parent.shikaku, "bridges");
+    this.parent.shikaku.update();
+    this.parent.kurodoko.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.kurodoko.board[cell.row][cell.column].unshaded = cell.unshaded;
+    this.parent.kurodoko.update();
   }
 }

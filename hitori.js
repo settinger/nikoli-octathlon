@@ -9,6 +9,10 @@ class HitoriCell extends Cell {
     this.node.className = "hitori cell";
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
+
+    if (~this.value) {
+      this.node.innerText = String(this.value);
+    }
   }
 }
 

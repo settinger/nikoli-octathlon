@@ -1,20 +1,6 @@
 class ShikakuCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.bridges = { top: false, left: false, right: false, bottom: false };
-  }
-
-  // Add or remove a bridge
-  toggleBridge(direction) {
-    const dir = direction.direction;
-    const opp = direction.opposite;
-    const neighbor = this.neighbors[dir];
-    if (~neighbor) {
-      this.bridges[dir] = !this.bridges[dir];
-      this.walls[dir] = false;
-      neighbor.bridges[opp] = !neighbor.bridges[opp];
-      neighbor.walls[opp] = false;
-    }
   }
 
   // Update cell's html representation
@@ -96,5 +82,34 @@ class Shikaku extends Puzzle {
       cell.toggleCertainty(leftClick);
     }
     this.update();
+
+    // Linked board events:
+    // If clue is marked true, place lightbulb in Akari and mark Hitori + Hitorilink as unshaded
+    // If clue is marked false/uncertain and Akari is a lightbulb, convert Akari cell to uncertain
+    // Copy walls of cell (and neighbors) to Heyawake
+    if (cell.clueCertainty && cell.realClue) {
+      this.parent.akari.board[cell.row][cell.column].markLamp();
+      this.parent.akari.update();
+      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitorilink.update();
+    }
+    if (
+      (!cell.clueCertainty || !cell.realClue) &&
+      this.parent.akari.board[cell.row][cell.column].lamp
+    ) {
+      this.parent.akari.board[cell.row][cell.column].markVague();
+      this.parent.akari.board[cell.row][cell.column].markUncertainClue();
+      this.parent.akari.update();
+      this.parent.hitori.board[cell.row][cell.column].markVague();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markVague();
+      this.parent.hitorilink.update();
+    }
+
+    cell.transfer(this.parent.heyawake, "walls");
+    cell.transfer(this.parent.heyawake, "bridges");
+    this.parent.heyawake.update();
   }
 }

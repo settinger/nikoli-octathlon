@@ -1,41 +1,15 @@
 class SlitherlinkCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.edges = { top: false, left: false, right: false, bottom: false };
   }
 
-  // Cycle between edge segment options: Uncertain, edge segment, edge cross
-  // Slightly different than toggleLoop() because edge segments can be toggled on the perimeter of the grid (loops can't)
-  // Very different from Corral toggleEdge() because Corral does not need edge crosses
-  toggleEdge(direction, leftClick = true) {
-    const dir = direction.direction;
-    const opp = direction.opposite;
-    const neighbor = this.neighbors[dir];
-    if (!this.edges[dir] && !this.crosses[dir]) {
-      // Option 1: Neither edge nor cross on vertex. If left-click, add edge; if right-click, add cross
-      this.edges[dir] = leftClick;
-      this.crosses[dir] = !leftClick;
-      if (~neighbor) {
-        neighbor.edges[opp] = leftClick;
-        neighbor.crosses[opp] = !leftClick;
-      }
-    } else if (this.edges[dir]) {
-      // Option 2: Edge on vertex. If left-click, change to cross; if right-click, remove edge
-      this.edges[dir] = false;
-      this.crosses[dir] = leftClick;
-      if (~neighbor) {
-        neighbor.edges[opp] = false;
-        neighbor.crosses[opp] = leftClick;
-      }
-    } else {
-      // Option 3: Cross on vertex. If left-click, remove cross; if right-click, change to edge
-      this.edges[dir] = !leftClick;
-      this.crosses[dir] = false;
-      if (~neighbor) {
-        neighbor.edges[opp] = !leftClick;
-        neighbor.crosses[opp] = false;
-      }
-    }
+  // Change the cell's clue value
+  // Options are: -1 (uncertain), 0, 1, 2, 3, 4
+  toggleValue(leftClick = true) {
+    let clue = this.value;
+    clue = leftClick ? clue + 1 : clue - 1;
+    clue = ((clue + 7) % 6) - 1;
+    this.value = clue;
   }
 
   // Update cell's html representation
@@ -52,6 +26,10 @@ class SlitherlinkCell extends Cell {
     this.crosses.left && this.node.classList.add("leftcross");
     this.crosses.right && this.node.classList.add("rightcross");
     this.crosses.bottom && this.node.classList.add("bottomcross");
+
+    if (~this.value) {
+      this.node.innerText = String(this.value);
+    }
 
     // Add corner dots
     // Top left corner
@@ -135,9 +113,32 @@ class Slitherlink extends Puzzle {
   }
 
   // What to do when a cell is clicked
-  // Toggle loops/crosses
+  // Mark cells: Cycle the values in the cells
+  // Mark vertices: toggle loops/crosses
   clickCell(cell, event, leftClick = true) {
-    cell.toggleEdge(cell.eventDirection(event), leftClick);
+    if (this.parent.markVertices) {
+      cell.toggleEdge(cell.eventDirection(event), leftClick);
+    } else {
+      cell.toggleValue(leftClick);
+    }
     this.update();
+
+    // Linked boards:
+    // Copy edges/crosses to Corral
+    // Subtract clue from Hitorilink and give to Hitori board
+    cell.transfer(this.parent.corral, "edges");
+    cell.transfer(this.parent.corral, "crosses");
+    this.parent.corral.update();
+
+    if (~cell.value) {
+      this.parent.hitori.board[cell.row][cell.column].value =
+        (this.parent.hitorilink.board[cell.row][cell.column].value -
+          cell.value +
+          10) %
+        10;
+    } else {
+      this.parent.hitori.board[cell.row][cell.column].value = -1;
+    }
+    this.parent.hitori.update();
   }
 }

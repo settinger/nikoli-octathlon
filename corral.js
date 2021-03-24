@@ -1,18 +1,20 @@
 class CorralCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.edges = { top: false, left: false, right: false, bottom: false };
   }
 
   // Add or remove an edge segment
-  // Slightly different than toggleWall() because edge segments can be toggled on the perimeter of the grid (walls can't)
-  // In Corral, edge crosses are not necessary
+  // Slightly different than default toggleEdge because in Corral, edge crosses are not necessary
   toggleEdge(direction) {
     const dir = direction.direction;
     const opp = direction.opposite;
     const neighbor = this.neighbors[dir];
     this.edges[dir] = !this.edges[dir];
-    ~neighbor && (neighbor.edges[opp] = !neighbor.edges[opp]);
+    this.crosses[dir] = false;
+    if (~neighbor) {
+      neighbor.edges[opp] = !neighbor.edges[opp];
+      neighbor.crosses[opp] = false;
+    }
   }
 
   // Update cell's HTML form
@@ -26,6 +28,10 @@ class CorralCell extends Cell {
     this.edges.bottom && this.node.classList.add("bottomedge");
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
+
+    if (~this.value) {
+      this.node.innerText = String(this.value);
+    }
 
     // If there is an edge on the cell, add edge divs
     // I tried doing this with border CSS and it looked awful
@@ -69,5 +75,16 @@ class Corral extends Puzzle {
       cell.toggleShading(leftClick);
     }
     this.update();
+
+    // Linked boards:
+    // Copy edges/crosses to Slitherlink
+    // Copy shading status to Corralsyu
+    cell.transfer(this.parent.slitherlink, "edges");
+    cell.transfer(this.parent.slitherlink, "crosses");
+    this.parent.slitherlink.update();
+
+    this.parent.corralsyu.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.corralsyu.board[cell.row][cell.column].unshaded = cell.unshaded;
+    this.parent.corralsyu.update();
   }
 }

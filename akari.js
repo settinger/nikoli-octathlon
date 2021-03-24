@@ -19,10 +19,12 @@ class AkariCell extends Cell {
     this.auxMark = false;
     this.wall = false;
     this.lamp = false;
+    this.illuminated = false;
   }
 
   // Mark a cell as known not a wall, not a lamp
   markAux() {
+    this.realClue = false;
     this.auxMark = true;
     this.wall = false;
     this.lamp = false;
@@ -30,6 +32,7 @@ class AkariCell extends Cell {
 
   // Mark a cell as a lamp
   markLamp() {
+    this.realClue = false;
     this.lamp = true;
     this.wall = false;
     this.auxMark = false;
@@ -37,6 +40,7 @@ class AkariCell extends Cell {
 
   // Mark a cell as a wall
   markWall() {
+    this.realClue = true;
     this.auxMark = false;
     this.wall = true;
     this.lamp = false;
@@ -295,18 +299,54 @@ class Akari extends Puzzle {
   }
 
   // What happens when a cell is clicked in Akari:
-  // If cell has a number in it:
-  // Left click cycles between uncertain shading, wall, lamp, unshaded
-  // Right click cycles between uncertain clue, certain true clue, certain false clue
-  // If cell does not have a number in it:
-  // Left and right click cycle between uncertain, wall, lamp, unshaded
+  // Toggle shading
+  // Automatically assign clue truth based on clue shading
   clickCell(cell, event, leftClick = true) {
-    if (~cell.value) {
-      leftClick ? cell.toggleShading() : cell.toggleCertainty();
-    } else {
-      cell.toggleShading(leftClick);
+    cell.toggleShading(leftClick);
+    if (~cell.value && cell.wall) {
+      cell.markTrueClue();
+    } else if (~cell.value && (cell.lamp || cell.auxMark)) {
+      cell.markFalseClue();
+    } else if (~cell.value) {
+      cell.markUncertainClue();
     }
+
     this.illuminateBoard();
     this.update();
+
+    // Linked board events:
+    // If Akari click produces a light, mark corresponding Shikaku clue as true
+    // If Akari click produces an aux or wall, mark corresponding Shikaku clue as false
+    // If Akari click produces a wall, mark corresponding Hitori + Hitorilink cell as shaded
+    // If Akari click removes produces a light or aux, mark corresponding Hitori + Hitorilink cells as unshaded
+    if (cell.lamp) {
+      this.parent.shikaku.board[cell.row][cell.column].markTrueClue();
+      this.parent.shikaku.update();
+      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitorilink.update();
+    } else if (cell.auxMark) {
+      this.parent.shikaku.board[cell.row][cell.column].markFalseClue();
+      this.parent.shikaku.update();
+      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitorilink.update();
+    } else if (cell.wall) {
+      this.parent.shikaku.board[cell.row][cell.column].markFalseClue();
+      this.parent.shikaku.update();
+      this.parent.hitori.board[cell.row][cell.column].markShaded();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markShaded();
+      this.parent.hitorilink.update();
+    } else {
+      this.parent.shikaku.board[cell.row][cell.column].markUncertainClue();
+      this.parent.shikaku.update();
+      this.parent.hitori.board[cell.row][cell.column].markVague();
+      this.parent.hitori.update();
+      this.parent.hitorilink.board[cell.row][cell.column].markVague();
+      this.parent.hitorilink.update();
+    }
   }
 }

@@ -64,6 +64,8 @@ td.cell {
 
 td.table-padding {
   width: auto;
+  border: none !important;
+  background-color: white !important;
 }
 
 td.uncertain {

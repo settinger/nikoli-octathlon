@@ -21,16 +21,22 @@ class Cell {
     this.loops = { top: false, left: false, right: false, bottom: false };
     this.crosses = { top: false, left: false, right: false, bottom: false };
     this.walls = { top: false, left: false, right: false, bottom: false };
+    this.bridges = { top: false, left: false, right: false, bottom: false };
+    this.edges = { top: false, left: false, right: false, bottom: false };
   }
 
   // Most games use some of the following methods
   markTrueClue() {
-    this.clueCertainty = true;
-    this.realClue = true;
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = true;
+    }
   }
   markFalseClue() {
-    this.clueCertainty = true;
-    this.realClue = false;
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = false;
+    }
   }
   markUncertainClue() {
     this.clueCertainty = false;
@@ -100,7 +106,22 @@ class Cell {
     const neighbor = this.neighbors[dir];
     if (~neighbor) {
       this.walls[dir] = !this.walls[dir];
+      this.bridges[dir] = false;
       neighbor.walls[opp] = !neighbor.walls[opp];
+      neighbor.bridges[opp] = false;
+    }
+  }
+
+  // Add or remove a bridge
+  toggleBridge(direction) {
+    const dir = direction.direction;
+    const opp = direction.opposite;
+    const neighbor = this.neighbors[dir];
+    if (~neighbor) {
+      this.bridges[dir] = !this.bridges[dir];
+      this.walls[dir] = false;
+      neighbor.bridges[opp] = !neighbor.bridges[opp];
+      neighbor.walls[opp] = false;
     }
   }
 
@@ -128,6 +149,51 @@ class Cell {
         neighbor.loops[opp] = !leftClick;
         this.crosses[dir] = false;
         neighbor.crosses[opp] = false;
+      }
+    }
+  }
+
+  // Cycle between edge segment options: Uncertain, edge segment, edge cross
+  // Slightly different than toggleLoop() because edge segments can be toggled on the perimeter of the grid (loops can't)
+  toggleEdge(direction, leftClick = true) {
+    const dir = direction.direction;
+    const opp = direction.opposite;
+    const neighbor = this.neighbors[dir];
+    if (!this.edges[dir] && !this.crosses[dir]) {
+      // Option 1: Neither edge nor cross on vertex. If left-click, add edge; if right-click, add cross
+      this.edges[dir] = leftClick;
+      this.crosses[dir] = !leftClick;
+      if (~neighbor) {
+        neighbor.edges[opp] = leftClick;
+        neighbor.crosses[opp] = !leftClick;
+      }
+    } else if (this.edges[dir]) {
+      // Option 2: Edge on vertex. If left-click, change to cross; if right-click, remove edge
+      this.edges[dir] = false;
+      this.crosses[dir] = leftClick;
+      if (~neighbor) {
+        neighbor.edges[opp] = false;
+        neighbor.crosses[opp] = leftClick;
+      }
+    } else {
+      // Option 3: Cross on vertex. If left-click, remove cross; if right-click, change to edge
+      this.edges[dir] = !leftClick;
+      this.crosses[dir] = false;
+      if (~neighbor) {
+        neighbor.edges[opp] = !leftClick;
+        neighbor.crosses[opp] = false;
+      }
+    }
+  }
+
+  // Transfer cell's walls/loops/edges/bridges/crosses from this puzzle to a different puzzle
+  transfer(puzzle, type) {
+    for (let cell of [this, ...Object.values(this.neighbors)]) {
+      if (~cell) {
+        puzzle.board[cell.row][cell.column][type] = Object.assign(
+          {},
+          cell[type]
+        );
       }
     }
   }

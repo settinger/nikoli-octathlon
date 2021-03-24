@@ -98,5 +98,20 @@ class Masyu extends Puzzle {
       cell.realClue = !cell.realClue;
     }
     this.update();
+
+    // Linked boards:
+    // copy loops/crosses to Country Road
+    // If pearl is true, mark it on corralsyu and copy corralsyu value to corral
+    cell.transfer(this.parent.countryRoad, "loops");
+    cell.transfer(this.parent.countryRoad, "crosses");
+    this.parent.countryRoad.update();
+
+    this.parent.corralsyu.board[cell.row][cell.column].realClue = cell.realClue;
+    this.parent.corral.board[cell.row][cell.column].value = cell.realClue
+      ? this.parent.corralsyu.board[cell.row][cell.column].corralValue
+      : -1;
+
+    this.parent.corralsyu.update();
+    this.parent.corral.update();
   }
 }

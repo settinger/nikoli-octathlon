@@ -26,8 +26,8 @@ class KurodokoCell extends Cell {
       this.node.appendChild(clue);
     }
 
-    // If the cell is marked unshaded, put an auxiliary mark
-    if (this.unshaded) {
+    // If the cell is marked unshaded (and no clue), put an auxiliary mark
+    if (this.unshaded && !~this.value) {
       const dot = document.createElement("div");
       dot.classList.add("marked");
       this.node.appendChild(dot);
@@ -59,8 +59,17 @@ class Kurodoko extends Puzzle {
   // When cell is clicked: toggle status
   // Possible statuses: Uncertain, shaded, unshaded
   clickCell(cell, event, leftClick = true) {
-    if (~cell.value) return;
-    cell.toggleShading();
+    if (~cell.value) {
+      cell.markUnshaded();
+    } else {
+      cell.toggleShading();
+    }
     this.update();
+
+    // Linked boards:
+    // Copy cell shadedness to Heyawake
+    this.parent.heyawake.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.heyawake.board[cell.row][cell.column].unshaded = cell.unshaded;
+    this.parent.heyawake.update();
   }
 }

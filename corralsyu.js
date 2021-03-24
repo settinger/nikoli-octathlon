@@ -57,5 +57,20 @@ class Corralsyu extends Puzzle {
   clickCell(cell, event, leftClick = true) {
     leftClick ? cell.toggleShading() : (cell.realClue = !cell.realClue);
     this.update();
+
+    // Linked boards:
+    // Copy shading status to Corral
+    // Copy cell truth to Masyu
+    // If pearl is true, mark it on Masyu and copy corralsyu value to corral
+    this.parent.masyu.board[cell.row][cell.column].realClue = cell.realClue;
+    this.parent.masyu.update();
+
+    this.parent.corral.board[cell.row][cell.column].value = cell.realClue
+      ? this.parent.corralsyu.board[cell.row][cell.column].corralValue
+      : -1;
+
+    this.parent.corral.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.corral.board[cell.row][cell.column].unshaded = cell.unshaded;
+    this.parent.corral.update();
   }
 }

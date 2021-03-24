@@ -88,5 +88,15 @@ class CountryRoad extends Puzzle {
       ? cell.toggleLoop(cell.eventDirection(event))
       : cell.toggleWall(cell.eventDirection(event));
     this.update();
+
+    // Linked boards:
+    // Copy rooms/bridges to Fillomino
+    // Copy loops/crosses to Masyu
+    cell.transfer(this.parent.fillomino, "walls");
+    cell.transfer(this.parent.fillomino, "bridges");
+    cell.transfer(this.parent.masyu, "loops");
+    cell.transfer(this.parent.masyu, "crosses");
+    this.parent.fillomino.update();
+    this.parent.masyu.update();
   }
 }
