@@ -1,10 +1,15 @@
+// Initialize Octathlon class
+const game = new Octathlon(10, 10);
+
 // Get some fixed divs
 const $container = document.getElementById("container");
 const $indicator = document.getElementById("indicator");
 $container.classList.add("mark-cells");
 $indicator.innerText = "Mark cell centers";
-
-const game = new Octathlon(10, 10);
+const $snapshot = document.getElementById("snapshot");
+$snapshot.addEventListener("click", (e) => game.download());
+const $restore = document.getElementById("restore");
+$restore.addEventListener("click", (e) => game.upload());
 
 const toggle = (e) => {
   if (

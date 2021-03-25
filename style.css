@@ -29,7 +29,7 @@ body {
 }
 
 #indicator {
-  padding-top: 2em;
+  padding: 2em;
 }
 
 /* The grid cell that holds the puzzle name, description, and puzzle grid */
