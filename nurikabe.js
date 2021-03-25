@@ -1,8 +1,16 @@
 class NurikabeCell extends Cell {
   constructor(row, column) {
     super(row, column);
-    this.upperBound = -1;
-    this.lowerBound = -1;
+    this.originalValue = -1;
+  }
+
+  // Change the cell's clue value
+  // Options are: -1 (uncertain) through this.originalValue
+  toggleValue(leftClick = true) {
+    let clue = this.value;
+    clue = leftClick ? clue + 1 : clue - 1;
+    clue = ((clue + this.originalValue + 3) % (this.originalValue + 2)) - 1;
+    this.value = clue;
   }
 
   // Update cell's HTML form
@@ -13,21 +21,22 @@ class NurikabeCell extends Cell {
     this.unshaded && this.node.classList.add("unshaded");
 
     // If the cell has a value, put it in a circle div
-    if (~this.value) {
+    if (~this.originalValue) {
       this.node.classList.add("clue");
       const clue = document.createElement("div");
       clue.classList.add("clue");
-      if (this.upperBound == this.lowerBound) {
-        clue.innerText = this.upperBound;
-      } else {
-        clue.classList.add("bounded");
-        clue.innerHTML = `&ge;${this.lowerBound}<br/>&le;${this.upperBound}`;
-      }
+      clue.innerText = ~this.value ? String(this.value) : "";
+      // if (this.upperBound == this.lowerBound) {
+      //   clue.innerText = this.upperBound;
+      // } else {
+      //   clue.classList.add("bounded");
+      //   clue.innerHTML = `&ge;${this.lowerBound}<br/>&le;${this.upperBound}`;
+      // }
       this.node.appendChild(clue);
     }
 
     // If the cell is marked unshaded, put an auxiliary mark
-    if (this.unshaded) {
+    if (this.unshaded && !~this.originalValue) {
       const dot = document.createElement("div");
       dot.classList.add("marked");
       this.node.appendChild(dot);
@@ -44,29 +53,25 @@ class Nurikabe extends Puzzle {
 
   // Populate grid with givens
   populate(array) {
-    for (let row = 0; row < array.length; row++) {
-      for (let col = 0; col < array[0].length; col++) {
-        const value = array[row][col];
-        this.board[row][col].value = value;
-        if (~value) {
-          this.board[row][col].upperBound = value - 1;
-          this.board[row][col].lowerBound = 1;
-        }
-      }
-    }
+    this.board.flat().forEach((cell) => {
+      cell.originalValue = array[cell.row][cell.column];
+    });
   }
 
-  // When cell is clicked: Toggle status
+  // When non-clue cell is clicked: Toggle status
   // Possible statuses: Uncertain, shaded, unshaded
+  // When clue cell is clicked: toggle cell value
   clickCell(cell, event, leftClick = true) {
-    if (~cell.value) {
+    if (~cell.originalValue) {
       cell.markUnshaded();
+      cell.toggleValue(leftClick);
     } else cell.toggleShading(leftClick);
     this.update();
 
     // Linked board updates:
     // Nurikabe shaded cells are Fillomino liars
     // Copy shadedness to Nuri-koro puzzle
+    // Change Kurodoko clue number
     if (cell.shaded) {
       this.parent.fillomino.board[cell.row][cell.column].markFalseClue();
     } else if (cell.unshaded) {
@@ -78,5 +83,11 @@ class Nurikabe extends Puzzle {
     this.parent.nurikoro.board[cell.row][cell.column].shaded = cell.shaded;
     this.parent.nurikoro.board[cell.row][cell.column].unshaded = cell.unshaded;
     this.parent.nurikoro.update();
+    if (~cell.originalValue) {
+      this.parent.kurodoko.board[cell.row][cell.column].value = ~cell.value
+        ? cell.originalValue - cell.value
+        : -1;
+      this.parent.kurodoko.update();
+    }
   }
 }

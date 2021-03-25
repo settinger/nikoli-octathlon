@@ -17,7 +17,7 @@ class NurikoroCell extends Cell {
     }
 
     // If the cell is marked unshaded, put an auxiliary mark
-    if (this.unshaded) {
+    if (this.unshaded && !~this.value) {
       const dot = document.createElement("div");
       dot.classList.add("marked");
       this.node.appendChild(dot);

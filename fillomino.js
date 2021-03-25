@@ -35,28 +35,6 @@ class FillominoCell extends Cell {
         }
       }
     }
-
-    // If there is a bridge in the cell, add a bridge div
-    if (this.bridges.top) {
-      const div = document.createElement("div");
-      div.classList.add("topbridge");
-      this.node.appendChild(div);
-    }
-    if (this.bridges.left) {
-      const div = document.createElement("div");
-      div.classList.add("leftbridge");
-      this.node.appendChild(div);
-    }
-    if (this.bridges.right) {
-      const div = document.createElement("div");
-      div.classList.add("rightbridge");
-      this.node.appendChild(div);
-    }
-    if (this.bridges.bottom) {
-      const div = document.createElement("div");
-      div.classList.add("bottombridge");
-      this.node.appendChild(div);
-    }
   }
 }
 
@@ -72,9 +50,7 @@ class Fillomino extends Puzzle {
   // If configured to mark cells and cell has clue, toggle clue certainty
   clickCell(cell, event, leftClick = true) {
     if (this.parent.markVertices) {
-      leftClick
-        ? cell.toggleWall(cell.eventDirection(event))
-        : cell.toggleBridge(cell.eventDirection(event));
+      cell.toggleWall(cell.eventDirection(event), leftClick);
     } else {
       cell.toggleCertainty(leftClick);
     }

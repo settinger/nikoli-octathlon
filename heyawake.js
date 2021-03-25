@@ -12,6 +12,10 @@ class HeyawakeCell extends Cell {
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");
     this.walls.bottom && this.node.classList.add("bottomwall");
+    this.bridges.top && this.node.classList.add("topbridge");
+    this.bridges.left && this.node.classList.add("leftbridge");
+    this.bridges.right && this.node.classList.add("rightbridge");
+    this.bridges.bottom && this.node.classList.add("bottombridge");
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
 
@@ -47,7 +51,7 @@ class Heyawake extends Puzzle {
   // If cell has no clue, toggle cell shadedness
   clickCell(cell, event, leftClick = true) {
     if (this.parent.markVertices) {
-      cell.toggleWall(cell.eventDirection(event));
+      cell.toggleWall(cell.eventDirection(event), leftClick);
     } else if (~cell.value) {
       leftClick ? cell.toggleShading() : cell.toggleCertainty();
     } else {

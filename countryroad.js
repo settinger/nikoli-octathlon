@@ -13,6 +13,10 @@ class CountryRoadCell extends Cell {
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");
     this.walls.bottom && this.node.classList.add("bottomwall");
+    this.bridges.top && this.node.classList.add("topbridge");
+    this.bridges.left && this.node.classList.add("leftbridge");
+    this.bridges.right && this.node.classList.add("rightbridge");
+    this.bridges.bottom && this.node.classList.add("bottombridge");
     this.loops.top && this.node.classList.add("toploop");
     this.loops.left && this.node.classList.add("leftloop");
     this.loops.right && this.node.classList.add("rightloop");
@@ -82,7 +86,7 @@ class CountryRoad extends Puzzle {
   }
 
   // What to do when a cell is clicked
-  // Left click toggles loops/crosses, right click toggles walls
+  // Left click toggles loops/crosses, right click toggles walls/bridges
   clickCell(cell, event, leftClick = true) {
     leftClick
       ? cell.toggleLoop(cell.eventDirection(event))

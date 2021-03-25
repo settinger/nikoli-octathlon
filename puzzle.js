@@ -99,29 +99,31 @@ class Cell {
     }
   }
 
-  // Add or remove a wall
-  toggleWall(direction) {
+  // Cycle between wall segment options: Uncertain, wall, bridge (no wall)
+  toggleWall(direction, leftClick = true) {
     const dir = direction.direction;
     const opp = direction.opposite;
     const neighbor = this.neighbors[dir];
     if (~neighbor) {
-      this.walls[dir] = !this.walls[dir];
-      this.bridges[dir] = false;
-      neighbor.walls[opp] = !neighbor.walls[opp];
-      neighbor.bridges[opp] = false;
-    }
-  }
-
-  // Add or remove a bridge
-  toggleBridge(direction) {
-    const dir = direction.direction;
-    const opp = direction.opposite;
-    const neighbor = this.neighbors[dir];
-    if (~neighbor) {
-      this.bridges[dir] = !this.bridges[dir];
-      this.walls[dir] = false;
-      neighbor.bridges[opp] = !neighbor.bridges[opp];
-      neighbor.walls[opp] = false;
+      if (!this.walls[dir] && !this.bridges[dir]) {
+        // Option 1: Neither wall nor bridge on vertex. If left-click, add wall; if right-click, add bridge
+        this.walls[dir] = leftClick;
+        neighbor.walls[opp] = leftClick;
+        this.bridges[dir] = !leftClick;
+        neighbor.bridges[opp] = !leftClick;
+      } else if (this.walls[dir]) {
+        // Option 2: Wall on vertex. If left-click, change to bridge; if right-click, remove wall
+        this.walls[dir] = false;
+        neighbor.walls[opp] = false;
+        this.bridges[dir] = leftClick;
+        neighbor.bridges[opp] = leftClick;
+      } else {
+        // Option 3: Bridge on vertex. If left-click, remove bridge; if right-click, change to wall
+        this.walls[dir] = !leftClick;
+        neighbor.walls[opp] = !leftClick;
+        this.bridges[dir] = false;
+        neighbor.bridges[opp] = false;
+      }
     }
   }
 

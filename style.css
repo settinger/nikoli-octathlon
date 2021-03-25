@@ -92,6 +92,21 @@ td.bottomwall {
   border-bottom: 5px solid black;
 }
 
+td.topbridge {
+  border-top: 1px dashed black;
+}
+
+td.leftbridge {
+  border-left: 1px dashed black;
+}
+
+td.rightbridge {
+  border-right: 1px dashed black;
+}
+td.bottombridge {
+  border-bottom: 1px dashed black;
+}
+
 /* Any divs inside a cell have certain properties */
 td div {
   position: absolute;
@@ -99,6 +114,7 @@ td div {
   z-index: 2;
 }
 
+/*
 div.topbridge {
   background: green;
   width: 8%;
@@ -130,6 +146,7 @@ div.bottombridge {
   left: 46%;
   top: 65%;
 }
+*/
 
 div.toploop {
   background: blue;
@@ -402,6 +419,7 @@ td.akari.wall {
   border: 2px solid black;
   border-radius: 50%;
   background-color: white;
+  padding-top: 3px;
 }
 
 .kurodoko .bounded {
@@ -457,6 +475,7 @@ td.akari.wall {
   border: 2px solid black;
   border-radius: 50%;
   background-color: white;
+  padding-top: 3px;
 }
 
 .nurikabe .bounded {
