@@ -244,7 +244,7 @@ class Puzzle {
         newCell.node.addEventListener("mouseover", (event) => {
           document.getElementById("cellstyle").innerText = this.parent
             .markVertices
-            ? `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`
+            ? `td.row${newCell.row}.col${newCell.column} {border-color: #8888ff;}`
             : `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
         });
 

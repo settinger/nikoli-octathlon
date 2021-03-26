@@ -182,6 +182,7 @@ class Octathlon {
     a.download = "snapshot.txt";
     a.click();
     window.URL.revokeObjectURL(url);
+    document.activeElement.blur();
   }
 
   // Restore game data from uploaded save file
@@ -433,11 +434,13 @@ class Octathlon {
 
     const input = document.createElement("input");
     input.type = "file";
+    input.accept = ".txt";
     input.onchange = (e) => {
       const file = e.target.files[0];
       reader.readAsText(file, "UTF-8");
     };
     input.style.display = "none";
     input.click();
+    document.activeElement.blur();
   }
 }
