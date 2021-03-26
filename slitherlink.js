@@ -17,7 +17,7 @@ class SlitherlinkCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = "slitherlink cell";
+    this.node.className = `slitherlink cell row${this.row} col${this.column}`;
     this.edges.top && this.node.classList.add("topedge");
     this.edges.left && this.node.classList.add("leftedge");
     this.edges.right && this.node.classList.add("rightedge");

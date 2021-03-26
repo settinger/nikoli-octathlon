@@ -24,7 +24,6 @@ class Octathlon {
   snapshot() {
     const snapshot = {
       akariGivens: make2dArray(this.rows, this.columns),
-      akariShading: make2dArray(this.rows, this.columns),
       akariObjects: make2dArray(this.rows, this.columns),
       shikakuGivens: make2dArray(this.rows, this.columns),
       shikakuClues: make2dArray(this.rows, this.columns),
@@ -37,6 +36,7 @@ class Octathlon {
       nurikabeShading: make2dArray(this.rows, this.columns),
       fillominoGivens: make2dArray(this.rows, this.columns),
       fillominoRooms: make2dArray(this.rows, this.columns),
+      countryRoadGivens: make2dArray(this.rows, this.columns),
       masyuGivens: make2dArray(this.rows, this.columns),
       masyuClues: make2dArray(this.rows, this.columns),
       masyuLoops: make2dArray(this.rows, this.columns),
@@ -51,15 +51,12 @@ class Octathlon {
     this.akari.board.flat().forEach((cell) => {
       snapshot.akariGivens[cell.row][cell.column] = cell.value;
 
-      snapshot.akariShading[cell.row][cell.column] =
-        (cell.shaded << 0) | (cell.unshaded << 1);
-
       snapshot.akariObjects[cell.row][cell.column] =
         (cell.wall << 0) |
         (cell.lamp << 1) |
         (cell.auxMark << 2) |
-        ((cell.clueCertainty && cell.realClue) << 3) |
-        ((cell.clueCertainty && !cell.realClue) << 4);
+        (cell.clueCertainty << 3) |
+        (cell.realClue << 4);
     });
 
     // Ushing the Shikaku cells: build array of Shikaku clues, Shikaku/Heyawake rooms, Shikaku clue truth
@@ -67,8 +64,7 @@ class Octathlon {
       snapshot.shikakuGivens[cell.row][cell.column] = cell.value;
 
       snapshot.shikakuClues[cell.row][cell.column] =
-        ((cell.clueCertainty && cell.realClue) << 0) |
-        ((cell.clueCertainty && !cell.realClue) << 1);
+        (cell.clueCertainty << 0) | (cell.realClue << 1);
 
       snapshot.shikakuRooms[cell.row][cell.column] =
         (cell.walls.top << 0) |
@@ -86,8 +82,7 @@ class Octathlon {
       snapshot.heyawakeGivens[cell.row][cell.column] = cell.value;
 
       snapshot.heyawakeClues[cell.row][cell.column] =
-        ((cell.clueCertainty && cell.realClue) << 0) |
-        ((cell.clueCertainty && !cell.realClue) << 1);
+        (cell.clueCertainty << 0) | (cell.realClue << 1);
 
       snapshot.heyawakeShading[cell.row][cell.column] =
         (cell.shaded << 0) | (cell.unshaded << 1);
@@ -118,6 +113,11 @@ class Octathlon {
         (cell.bridges.bottom << 7);
     });
 
+    // Using the Country Road cells, build array of Country Road givens
+    this.countryRoad.board.flat().forEach((cell) => {
+      snapshot.countryRoadGivens[cell.row][cell.column] = cell.value;
+    });
+
     // Using the Masyu cells, build array of Masyu givens, Masyu/Country Road loop, Masyu cell truth
     this.masyu.board.flat().forEach((cell) => {
       snapshot.masyuGivens[cell.row][cell.column] = cell.value;
@@ -146,10 +146,10 @@ class Octathlon {
         (cell.shaded << 0) | (cell.unshaded << 1);
 
       snapshot.corralLoops[cell.row][cell.column] =
-        (cell.loops.top << 0) |
-        (cell.loops.left << 1) |
-        (cell.loops.right << 2) |
-        (cell.loops.bottom << 3) |
+        (cell.edges.top << 0) |
+        (cell.edges.left << 1) |
+        (cell.edges.right << 2) |
+        (cell.edges.bottom << 3) |
         (cell.crosses.top << 4) |
         (cell.crosses.left << 5) |
         (cell.crosses.right << 6) |
@@ -185,7 +185,240 @@ class Octathlon {
 
   // Restore game data from uploaded save file
   restore(snapshot) {
-    console.log(snapshot.akariGivens);
+    // Function to get the value of a particular bit of an integer
+    const getBit = (int, bit) => {
+      return !!((int >> bit) & 1);
+    };
+
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.columns; col++) {
+        let akariGivens = snapshot.akariGivens[row][col];
+        let akariObjects = snapshot.akariObjects[row][col];
+        let shikakuGivens = snapshot.shikakuGivens[row][col];
+        let shikakuClues = snapshot.shikakuClues[row][col];
+        let shikakuRooms = snapshot.shikakuRooms[row][col];
+        let heyawakeGivens = snapshot.heyawakeGivens[row][col];
+        let heyawakeClues = snapshot.heyawakeClues[row][col];
+        let heyawakeShading = snapshot.heyawakeShading[row][col];
+        let nurikabeGivens = snapshot.nurikabeGivens[row][col];
+        let nurikabeValues = snapshot.nurikabeValues[row][col];
+        let nurikabeShading = snapshot.nurikabeShading[row][col];
+        let fillominoGivens = snapshot.fillominoGivens[row][col];
+        let fillominoRooms = snapshot.fillominoRooms[row][col];
+        let countryRoadGivens = snapshot.countryRoadGivens[row][col];
+        let masyuGivens = snapshot.masyuGivens[row][col];
+        let masyuClues = snapshot.masyuClues[row][col];
+        let masyuLoops = snapshot.masyuLoops[row][col];
+        let corralGivens = snapshot.corralGivens[row][col];
+        let corralShading = snapshot.corralShading[row][col];
+        let corralLoops = snapshot.corralLoops[row][col];
+        let hitoriGivens = snapshot.hitoriGivens[row][col];
+        let hitoriValues = snapshot.hitoriValues[row][col];
+
+        let cell;
+
+        // Akari board: use akariGivens, akariObjects
+        cell = this.akari.board[row][col];
+        cell.value = akariGivens;
+        cell.wall = getBit(akariObjects, 0);
+        cell.lamp = getBit(akariObjects, 1);
+        cell.auxMark = getBit(akariObjects, 2);
+        cell.clueCertainty = getBit(akariObjects, 3);
+        cell.realClue = getBit(akariObjects, 4);
+
+        // Shikaku board: use shikakuGivens, shikakuClues, shikakuRooms
+        cell = this.shikaku.board[row][col];
+        cell.value = shikakuGivens;
+        cell.clueCertainty = getBit(shikakuClues, 0);
+        cell.realClue = getBit(shikakuClues, 1);
+        cell.walls = {
+          top: getBit(shikakuRooms, 0),
+          left: getBit(shikakuRooms, 1),
+          right: getBit(shikakuRooms, 2),
+          bottom: getBit(shikakuRooms, 3),
+        };
+        cell.bridges = {
+          top: getBit(shikakuRooms, 4),
+          left: getBit(shikakuRooms, 5),
+          right: getBit(shikakuRooms, 6),
+          bottom: getBit(shikakuRooms, 7),
+        };
+
+        // Heyawake: use shikakuRooms, heyawakeGivens, heyawakeClues, heyawakeShading
+        cell = this.heyawake.board[row][col];
+        cell.value = heyawakeGivens;
+        cell.walls = {
+          top: getBit(shikakuRooms, 0),
+          left: getBit(shikakuRooms, 1),
+          right: getBit(shikakuRooms, 2),
+          bottom: getBit(shikakuRooms, 3),
+        };
+        cell.bridges = {
+          top: getBit(shikakuRooms, 4),
+          left: getBit(shikakuRooms, 5),
+          right: getBit(shikakuRooms, 6),
+          bottom: getBit(shikakuRooms, 7),
+        };
+        cell.clueCertainty = getBit(heyawakeClues, 0);
+        cell.realClue = getBit(heyawakeClues, 1);
+        cell.shaded = getBit(heyawakeShading, 0);
+        cell.unshaded = getBit(heyawakeShading, 1);
+
+        // Kurodoko: use heyawakeShading, nurikabeGivens, nurikabeValues
+        cell = this.kurodoko.board[row][col];
+        cell.originalValue = nurikabeGivens;
+        cell.shaded = getBit(heyawakeShading, 0);
+        cell.unshaded = getBit(heyawakeShading, 1);
+        cell.value = ~nurikabeValues ? nurikabeGivens - nurikabeValues : -1;
+
+        // Nurikabe: use nurikabeGivens, nurikabeValues, nurikabeShading
+        cell = this.nurikabe.board[row][col];
+        cell.originalValue = nurikabeGivens;
+        cell.shaded = getBit(nurikabeShading, 0);
+        cell.unshaded = getBit(nurikabeShading, 1);
+        cell.value = ~nurikabeValues ? nurikabeValues : -1;
+
+        // Nurikoro: use nurikabeGivens, nurikabeShading
+        cell = this.nurikoro.board[row][col];
+        cell.value = nurikabeGivens;
+        cell.shaded = getBit(nurikabeShading, 0);
+        cell.unshaded = getBit(nurikabeShading, 1);
+
+        // Fillomino: use fillominoGivens, nurikabeShading, fillominoRooms
+        cell = this.fillomino.board[row][col];
+        cell.value = fillominoGivens;
+        cell.walls = {
+          top: getBit(fillominoRooms, 0),
+          left: getBit(fillominoRooms, 1),
+          right: getBit(fillominoRooms, 2),
+          bottom: getBit(fillominoRooms, 3),
+        };
+        cell.bridges = {
+          top: getBit(fillominoRooms, 4),
+          left: getBit(fillominoRooms, 5),
+          right: getBit(fillominoRooms, 6),
+          bottom: getBit(fillominoRooms, 7),
+        };
+        cell.clueCertainty =
+          getBit(nurikabeShading, 0) || getBit(nurikabeShading, 1);
+        cell.realClue = getBit(nurikabeShading, 1) && cell.clueCertainty;
+
+        // Country Road: use countryRoadGivens, fillominoRooms, masyuLoops
+        cell = this.countryRoad.board[row][col];
+        cell.value = countryRoadGivens;
+        cell.walls = {
+          top: getBit(fillominoRooms, 0),
+          left: getBit(fillominoRooms, 1),
+          right: getBit(fillominoRooms, 2),
+          bottom: getBit(fillominoRooms, 3),
+        };
+        cell.bridges = {
+          top: getBit(fillominoRooms, 4),
+          left: getBit(fillominoRooms, 5),
+          right: getBit(fillominoRooms, 6),
+          bottom: getBit(fillominoRooms, 7),
+        };
+        cell.loops = {
+          top: getBit(masyuLoops, 0),
+          left: getBit(masyuLoops, 1),
+          right: getBit(masyuLoops, 2),
+          bottom: getBit(masyuLoops, 3),
+        };
+        cell.crosses = {
+          top: getBit(masyuLoops, 4),
+          left: getBit(masyuLoops, 5),
+          right: getBit(masyuLoops, 6),
+          bottom: getBit(masyuLoops, 7),
+        };
+
+        // Masyu: use masyuGivens, masyuLoops, masyuClues
+        cell = this.masyu.board[row][col];
+        cell.value = masyuGivens;
+        cell.realClue = !!masyuClues;
+        cell.loops = {
+          top: getBit(masyuLoops, 0),
+          left: getBit(masyuLoops, 1),
+          right: getBit(masyuLoops, 2),
+          bottom: getBit(masyuLoops, 3),
+        };
+        cell.crosses = {
+          top: getBit(masyuLoops, 4),
+          left: getBit(masyuLoops, 5),
+          right: getBit(masyuLoops, 6),
+          bottom: getBit(masyuLoops, 7),
+        };
+
+        // Corralsyu: use corralGivens, corralShading, masyuClues
+        cell = this.corralsyu.board[row][col];
+        cell.corralValue = corralGivens;
+        cell.masyuValue = masyuGivens;
+        cell.shaded = getBit(corralShading, 0);
+        cell.unshaded = getBit(corralShading, 1);
+        cell.realClue = !!masyuClues;
+
+        // Corral: use corralShading, corralLoops
+        cell = this.corral.board[row][col];
+        cell.value = !!masyuClues ? corralGivens : -1;
+        cell.shaded = getBit(corralShading, 0);
+        cell.unshaded = getBit(corralShading, 1);
+        cell.edges = {
+          top: getBit(corralLoops, 0),
+          left: getBit(corralLoops, 1),
+          right: getBit(corralLoops, 2),
+          bottom: getBit(corralLoops, 3),
+        };
+        cell.crosses = {
+          top: getBit(corralLoops, 4),
+          left: getBit(corralLoops, 5),
+          right: getBit(corralLoops, 6),
+          bottom: getBit(corralLoops, 7),
+        };
+
+        // Slitherlink: use corralLoops, hitoriGivens, hitoriValues
+        cell = this.slitherlink.board[row][col];
+        cell.value = ~hitoriValues
+          ? (hitoriGivens - hitoriValues + 10) % 10
+          : -1;
+        cell.edges = {
+          top: getBit(corralLoops, 0),
+          left: getBit(corralLoops, 1),
+          right: getBit(corralLoops, 2),
+          bottom: getBit(corralLoops, 3),
+        };
+        cell.crosses = {
+          top: getBit(corralLoops, 4),
+          left: getBit(corralLoops, 5),
+          right: getBit(corralLoops, 6),
+          bottom: getBit(corralLoops, 7),
+        };
+
+        // Hitori: use akariObjects, hitoriGivens, hitoriValues
+        cell = this.hitori.board[row][col];
+        cell.value = hitoriValues;
+        cell.shaded = getBit(akariObjects, 0);
+        cell.unshaded = getBit(akariObjects, 1) || getBit(akariObjects, 2);
+
+        // Hitorilink: use akariObjects, hitoriGivens
+        cell = this.hitorilink.board[row][col];
+        cell.value = hitoriGivens;
+        cell.shaded = getBit(akariObjects, 0);
+        cell.unshaded = getBit(akariObjects, 1) || getBit(akariObjects, 2);
+      }
+    }
+    this.akari.update();
+    this.shikaku.update();
+    this.heyawake.update();
+    this.kurodoko.update();
+    this.nurikabe.update();
+    this.nurikoro.update();
+    this.fillomino.update();
+    this.countryRoad.update();
+    this.masyu.update();
+    this.corralsyu.update();
+    this.corral.update();
+    this.slitherlink.update();
+    this.hitori.update();
+    this.hitorilink.update();
   }
 
   // Upload function

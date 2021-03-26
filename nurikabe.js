@@ -16,7 +16,7 @@ class NurikabeCell extends Cell {
   // Update cell's HTML form
   update() {
     this.node.innerHTML = "";
-    this.node.className = "nurikabe cell";
+    this.node.className = `nurikabe cell row${this.row} col${this.column}`;
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
 

@@ -16,7 +16,7 @@ class KurodokoCell extends Cell {
   // Update cell's html form
   update() {
     this.node.innerHTML = "";
-    this.node.className = "kurodoko cell";
+    this.node.className = `kurodoko cell row${this.row} col${this.column}`;
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
 
@@ -66,7 +66,7 @@ class Kurodoko extends Puzzle {
       cell.markUnshaded();
       cell.toggleValue(leftClick);
     } else {
-      cell.toggleShading();
+      cell.toggleShading(leftClick);
     }
     this.update();
 

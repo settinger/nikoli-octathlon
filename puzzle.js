@@ -211,6 +211,10 @@ class Puzzle {
     this.valid = true;
     this.node = document.createElement("table");
     this.node.classList.add("puzzlegrid");
+    this.node.addEventListener("mouseleave", (e) => {
+      document.getElementById("cellstyle").innerText = ``;
+    });
+
     this.cellType = Cell;
   }
 
@@ -236,6 +240,12 @@ class Puzzle {
         newCell.node.addEventListener("contextmenu", (event) => {
           event.preventDefault();
           this.clickCell(newCell, event, false);
+        });
+        newCell.node.addEventListener("mouseover", (event) => {
+          document.getElementById("cellstyle").innerText = this.parent
+            .markVertices
+            ? `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`
+            : `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
         });
 
         this.board[row][col] = newCell;

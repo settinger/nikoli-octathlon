@@ -9,7 +9,7 @@ class CorralsyuCell extends Cell {
   update() {
     this.node.innerHTML = "";
 
-    this.node.className = "corralsyu corral masyu cell";
+    this.node.className = `corralsyu corral masyu cell row${this.row} col${this.column}`;
 
     // Shade the cell with corral colors
     this.shaded && this.node.classList.add("shaded");

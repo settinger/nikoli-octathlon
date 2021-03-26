@@ -65,7 +65,7 @@ class AkariCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = "akari cell";
+    this.node.className = `akari cell row${this.row} col${this.column}`;
     this.wall && this.node.classList.add("wall");
     this.lamp && this.node.classList.add("lamp");
     (this.lamp || this.illuminated) && this.node.classList.add("illuminated");

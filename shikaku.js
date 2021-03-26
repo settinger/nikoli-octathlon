@@ -8,7 +8,7 @@ class ShikakuCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = "shikaku cell";
+    this.node.className = `shikaku cell row${this.row} col${this.column}`;
     this.walls.top && this.node.classList.add("topwall");
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");

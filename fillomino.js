@@ -8,7 +8,7 @@ class FillominoCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = "fillomino cell";
+    this.node.className = `fillomino cell row${this.row} col${this.column}`;
     this.walls.top && this.node.classList.add("topwall");
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");
@@ -51,7 +51,7 @@ class Fillomino extends Puzzle {
   clickCell(cell, event, leftClick = true) {
     if (this.parent.markVertices) {
       cell.toggleWall(cell.eventDirection(event), leftClick);
-    } else {
+    } else if (~cell.value) {
       cell.toggleCertainty(leftClick);
     }
     this.update();
@@ -60,18 +60,20 @@ class Fillomino extends Puzzle {
     // Fillomino true cells are Nurikabe unshaded cells
     // Fillomino false cells are Nurikabe shaded cells
     // Copy walls/bridges to Country Road
-    if (cell.clueCertainty && cell.realClue) {
-      this.parent.nurikabe.board[cell.row][cell.column].markUnshaded();
-      this.parent.nurikoro.board[cell.row][cell.column].markUnshaded();
-    } else if (cell.clueCertainty && !cell.realClue) {
-      this.parent.nurikabe.board[cell.row][cell.column].markShaded();
-      this.parent.nurikoro.board[cell.row][cell.column].markShaded();
-    } else {
-      this.parent.nurikabe.board[cell.row][cell.column].markVague();
-      this.parent.nurikoro.board[cell.row][cell.column].markVague();
+    if (~cell.value) {
+      if (cell.clueCertainty && cell.realClue) {
+        this.parent.nurikabe.board[cell.row][cell.column].markUnshaded();
+        this.parent.nurikoro.board[cell.row][cell.column].markUnshaded();
+      } else if (cell.clueCertainty && !cell.realClue) {
+        this.parent.nurikabe.board[cell.row][cell.column].markShaded();
+        this.parent.nurikoro.board[cell.row][cell.column].markShaded();
+      } else {
+        this.parent.nurikabe.board[cell.row][cell.column].markVague();
+        this.parent.nurikoro.board[cell.row][cell.column].markVague();
+      }
+      this.parent.nurikabe.update();
+      this.parent.nurikoro.update();
     }
-    this.parent.nurikabe.update();
-    this.parent.nurikoro.update();
 
     cell.transfer(this.parent.countryRoad, "walls");
     cell.transfer(this.parent.countryRoad, "bridges");

@@ -6,7 +6,7 @@ class NurikoroCell extends Cell {
   // Update cell's HTML form
   update() {
     this.node.innerHTML = "";
-    this.node.className = "nurikabe nurikoro cell";
+    this.node.className = `nurikabe nurikoro cell row${this.row} col${this.column}`;
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
 
@@ -37,7 +37,7 @@ class Nurikoro extends Puzzle {
   clickCell(cell, event, leftClick = true) {
     if (~cell.value) {
       cell.markUnshaded();
-    } else cell.toggleShading();
+    } else cell.toggleShading(leftClick);
     this.update();
 
     // Linked board updates:

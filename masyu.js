@@ -8,7 +8,7 @@ class MasyuCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = "masyu cell";
+    this.node.className = `masyu cell row${this.row} col${this.column}`;
     this.loops.top && this.node.classList.add("toploop");
     this.loops.left && this.node.classList.add("leftloop");
     this.loops.right && this.node.classList.add("rightloop");

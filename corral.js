@@ -21,7 +21,7 @@ class CorralCell extends Cell {
   update() {
     this.node.innerHTML = "";
 
-    this.node.className = "corral cell";
+    this.node.className = `corral cell row${this.row} col${this.column}`;
     this.edges.top && this.node.classList.add("topedge");
     this.edges.left && this.node.classList.add("leftedge");
     this.edges.right && this.node.classList.add("rightedge");

@@ -7,7 +7,7 @@ class HeyawakeCell extends Cell {
   update() {
     this.node.innerHTML = "";
 
-    this.node.className = "heyawake cell";
+    this.node.className = `heyawake cell row${this.row} col${this.column}`;
     this.walls.top && this.node.classList.add("topwall");
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");

@@ -6,7 +6,7 @@ class HitoriCell extends Cell {
   // Update cell's HTML form
   update() {
     this.node.innerHTML = "";
-    this.node.className = "hitori cell";
+    this.node.className = `hitori cell row${this.row} col${this.column}`;
     this.shaded && this.node.classList.add("shaded");
     this.unshaded && this.node.classList.add("unshaded");
 
@@ -28,5 +28,21 @@ class Hitori extends Puzzle {
   clickCell(cell, event, leftClick = true) {
     cell.toggleShading(leftClick);
     this.update();
+
+    // Linked board events:
+    // Transfer shading to Akari board and Hitorilink board
+    this.parent.hitorilink.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.hitorilink.board[cell.row][cell.column].unshaded =
+      cell.unshaded;
+    this.parent.hitorilink.update();
+
+    if (cell.shaded) {
+      this.parent.akari.board[cell.row][cell.column].markWall();
+      this.parent.akari.update();
+    }
+    if (cell.unshaded && this.parent.akari.board[cell.row][cell.column].wall) {
+      this.parent.akari.board[cell.row][cell.column].markVague();
+      this.parent.akari.update();
+    }
   }
 }
