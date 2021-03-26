@@ -89,6 +89,7 @@ Akari light bulb <-> Real Shikaku clue
 `;
 akariDiv.appendChild(game.akari.node);
 $container.appendChild(akariDiv);
+game.akari.addButton();
 game.akari.populate(akariGivens);
 game.akari.update();
 

@@ -37,11 +37,11 @@ class Hitorilink extends Puzzle {
 
     if (cell.shaded) {
       this.parent.akari.board[cell.row][cell.column].markWall();
-      this.parent.akari.update();
-    }
-    if (cell.unshaded && this.parent.akari.board[cell.row][cell.column].wall) {
+    } else if (cell.unshaded) {
+      this.parent.akari.board[cell.row][cell.column].markUnshaded();
+    } else {
       this.parent.akari.board[cell.row][cell.column].markVague();
-      this.parent.akari.update();
     }
+    this.parent.akari.update();
   }
 }

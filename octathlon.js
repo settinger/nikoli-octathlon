@@ -52,11 +52,12 @@ class Octathlon {
       snapshot.akariGivens[cell.row][cell.column] = cell.value;
 
       snapshot.akariObjects[cell.row][cell.column] =
-        (cell.wall << 0) |
-        (cell.lamp << 1) |
-        (cell.auxMark << 2) |
-        (cell.clueCertainty << 3) |
-        (cell.realClue << 4);
+        (cell.shaded << 0) |
+        (cell.unshaded << 1) |
+        (cell.lamp << 2) |
+        (cell.auxMark << 3) |
+        (cell.clueCertainty << 4) |
+        (cell.realClue << 5);
     });
 
     // Ushing the Shikaku cells: build array of Shikaku clues, Shikaku/Heyawake rooms, Shikaku clue truth
@@ -220,11 +221,12 @@ class Octathlon {
         // Akari board: use akariGivens, akariObjects
         cell = this.akari.board[row][col];
         cell.value = akariGivens;
-        cell.wall = getBit(akariObjects, 0);
-        cell.lamp = getBit(akariObjects, 1);
-        cell.auxMark = getBit(akariObjects, 2);
-        cell.clueCertainty = getBit(akariObjects, 3);
-        cell.realClue = getBit(akariObjects, 4);
+        cell.shaded = getBit(akariObjects, 0);
+        cell.unshaded = getBit(akariObjects, 1);
+        cell.lamp = getBit(akariObjects, 2);
+        cell.auxMark = getBit(akariObjects, 3);
+        cell.clueCertainty = getBit(akariObjects, 4);
+        cell.realClue = getBit(akariObjects, 5);
 
         // Shikaku board: use shikakuGivens, shikakuClues, shikakuRooms
         cell = this.shikaku.board[row][col];
@@ -396,13 +398,13 @@ class Octathlon {
         cell = this.hitori.board[row][col];
         cell.value = hitoriValues;
         cell.shaded = getBit(akariObjects, 0);
-        cell.unshaded = getBit(akariObjects, 1) || getBit(akariObjects, 2);
+        cell.unshaded = getBit(akariObjects, 1);
 
         // Hitorilink: use akariObjects, hitoriGivens
         cell = this.hitorilink.board[row][col];
         cell.value = hitoriGivens;
         cell.shaded = getBit(akariObjects, 0);
-        cell.unshaded = getBit(akariObjects, 1) || getBit(akariObjects, 2);
+        cell.unshaded = getBit(akariObjects, 1);
       }
     }
     this.akari.update();

@@ -254,9 +254,18 @@ td.akari.illuminated {
   background-color: greenyellow;
 }
 
-td.akari.wall {
+td.akari.shaded {
   background-color: black;
   color: white;
+}
+
+td.akari.unshaded:not(.illuminated) {
+  background-color: white;
+}
+
+.akari td:not(.shaded):not(.unshaded) {
+  color: black;
+  background-color: #dddddd;
 }
 
 .akari div.lamp {
@@ -279,19 +288,19 @@ td.akari.wall {
   height: 10%;
 }
 
-.akari .false:not(.wall) {
+.akari .false:not(.shaded) {
   color: white;
   text-shadow: -1px 1px 0 black, 1px 1px 0 black, 1px -1px 0 black,
     -1px -1px 0 black;
 }
 
-.akari .false.wall {
+.akari .false.shaded {
   color: black;
   text-shadow: -1px 1px 0 white, 1px 1px 0 white, 1px -1px 0 white,
     -1px -1px 0 white;
 }
 
-.akari :not(.wall) div.true {
+.akari :not(.shaded) div.true {
   top: 5%;
   left: 5%;
   width: 90%;
@@ -300,7 +309,7 @@ td.akari.wall {
   border-radius: 50%;
 }
 
-.akari .wall div.true {
+.akari .shaded div.true {
   top: 5%;
   left: 5%;
   width: 90%;

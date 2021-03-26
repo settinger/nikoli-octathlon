@@ -4,59 +4,87 @@ class AkariCell extends Cell {
   constructor(row, column) {
     super(row, column);
     this.auxMark = false; // Presence of an auxiliary mark (i.e. no lamp, no wall)
-    this.wall = false; // Presence of wall in cell
     this.lamp = false; // Presence of lamp in cell
     this.illuminated = false; // Illumination status of cell
   }
 
   illuminate() {
     this.illuminated = true;
-    this.wall = false;
+    this.shaded = false;
+    this.unshaded = true;
   }
 
   // Mark a ceil as unknown shading
   markVague() {
+    this.clueCertainty = false;
     this.auxMark = false;
-    this.wall = false;
     this.lamp = false;
     this.illuminated = false;
+    this.shaded = false;
+    this.unshaded = false;
+  }
+
+  // Mark a cell as unshaded (but not known if it's a lamp or not)
+  markUnshadedButVague() {
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = false;
+    }
+    this.auxMark = false;
+    this.lamp = false;
+    this.shaded = false;
+    this.unshaded = true;
   }
 
   // Mark a cell as known not a wall, not a lamp
   markAux() {
-    this.realClue = false;
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = false;
+    }
     this.auxMark = true;
-    this.wall = false;
     this.lamp = false;
+    this.shaded = false;
+    this.unshaded = true;
   }
 
   // Mark a cell as a lamp
   markLamp() {
-    this.realClue = false;
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = false;
+    }
     this.lamp = true;
-    this.wall = false;
     this.auxMark = false;
+    this.shaded = false;
+    this.unshaded = true;
   }
 
   // Mark a cell as a wall
   markWall() {
-    this.realClue = true;
+    if (~this.value) {
+      this.clueCertainty = true;
+      this.realClue = true;
+    }
     this.auxMark = false;
-    this.wall = true;
     this.lamp = false;
     this.illuminated = false;
+    this.shaded = true;
+    this.unshaded = false;
   }
 
-  // Cycle between shading styles for a cell: Uncertain, wall, lamp, unshaded
+  // Cycle between shading styles for a cell: Vague, wall, lamp, unshaded and aux mark, unshaded and no aux mark
   toggleShading(leftClick = true) {
-    if (!this.lamp && !this.wall && !this.auxMark) {
-      leftClick ? this.markWall() : this.markAux();
-    } else if (this.wall) {
+    if (!this.shaded && !this.unshaded) {
+      leftClick ? this.markWall() : this.markUnshadedButVague();
+    } else if (this.shaded) {
       leftClick ? this.markLamp() : this.markVague();
     } else if (this.lamp) {
       leftClick ? this.markAux() : this.markWall();
+    } else if (this.auxMark) {
+      leftClick ? this.markUnshadedButVague() : this.markLamp();
     } else {
-      leftClick ? this.markVague() : this.markLamp();
+      leftClick ? this.markVague() : this.markAux();
     }
   }
 
@@ -66,14 +94,11 @@ class AkariCell extends Cell {
 
     // Clear CSS classes and re-assign
     this.node.className = `akari cell row${this.row} col${this.column}`;
-    this.wall && this.node.classList.add("wall");
+    this.shaded && this.node.classList.add("shaded");
+    this.unshaded && this.node.classList.add("unshaded");
     this.lamp && this.node.classList.add("lamp");
-    (this.lamp || this.illuminated) && this.node.classList.add("illuminated");
+    this.illuminated && this.node.classList.add("illuminated");
     this.auxMark && this.node.classList.add("marked");
-    !this.auxMark &&
-      !this.wall &&
-      !this.lamp &&
-      this.node.classList.add("uncertain");
 
     // If there is a value in the cell, indicate the truth status of that clue
     // If the clue is known true, add a circle div
@@ -113,11 +138,56 @@ class Akari extends Puzzle {
     super(parent);
     this.cellType = AkariCell;
     this.initializeCells();
+
+    this.illuminated = false;
+  }
+
+  // Once object is inserted into document, add a toggle button
+  addButton() {
+    this.toggle = document.createElement("button");
+    this.toggle.innerText = "Toggle Lights";
+    this.toggle.addEventListener("click", (e) => {
+      this.toggleLights();
+      this.update();
+    });
+    this.node.parentNode.appendChild(this.toggle);
   }
 
   // Return a list of all cells with lamps
   lamps() {
     return this.board.flat().filter((cell) => cell.lamp);
+  }
+
+  // Change if the lights illuminate all unshaded cells they can see
+  toggleLights() {
+    this.illuminated = !this.illuminated;
+
+    // Remove "illuminated" property from each cell
+    this.board.flat().forEach((cell) => {
+      cell.illuminated = false;
+    });
+
+    // Apply lumination if board has illuminated property
+    if (this.illuminated) {
+      for (let lampCell of this.lamps()) {
+        // Illuminate all possible cells
+        lampCell.illuminate();
+        let newCell = lampCell;
+
+        for (let direction of ["top", "left", "right", "bottom"]) {
+          newCell = lampCell;
+          while (1) {
+            newCell = newCell.neighbors[direction];
+            if (!~newCell) break;
+            if (newCell.unshaded) {
+              newCell.illuminate();
+            } else {
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
   // Check completeness of solution
@@ -303,15 +373,6 @@ class Akari extends Puzzle {
   // Automatically assign clue truth based on clue shading
   clickCell(cell, event, leftClick = true) {
     cell.toggleShading(leftClick);
-    if (~cell.value && cell.wall) {
-      cell.markTrueClue();
-    } else if (~cell.value && (cell.lamp || cell.auxMark)) {
-      cell.markFalseClue();
-    } else if (~cell.value) {
-      cell.markUncertainClue();
-    }
-
-    this.illuminateBoard();
     this.update();
 
     // Linked board events:
@@ -321,32 +382,24 @@ class Akari extends Puzzle {
     // If Akari click removes produces a light or aux, mark corresponding Hitori + Hitorilink cells as unshaded
     if (cell.lamp) {
       this.parent.shikaku.board[cell.row][cell.column].markTrueClue();
-      this.parent.shikaku.update();
-      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
-      this.parent.hitori.update();
-      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
-      this.parent.hitorilink.update();
-    } else if (cell.auxMark) {
+    } else if (cell.auxMark || cell.shaded) {
       this.parent.shikaku.board[cell.row][cell.column].markFalseClue();
-      this.parent.shikaku.update();
-      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
-      this.parent.hitori.update();
-      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
-      this.parent.hitorilink.update();
-    } else if (cell.wall) {
-      this.parent.shikaku.board[cell.row][cell.column].markFalseClue();
-      this.parent.shikaku.update();
-      this.parent.hitori.board[cell.row][cell.column].markShaded();
-      this.parent.hitori.update();
-      this.parent.hitorilink.board[cell.row][cell.column].markShaded();
-      this.parent.hitorilink.update();
     } else {
       this.parent.shikaku.board[cell.row][cell.column].markUncertainClue();
-      this.parent.shikaku.update();
-      this.parent.hitori.board[cell.row][cell.column].markVague();
-      this.parent.hitori.update();
-      this.parent.hitorilink.board[cell.row][cell.column].markVague();
-      this.parent.hitorilink.update();
     }
+
+    if (cell.shaded) {
+      this.parent.hitori.board[cell.row][cell.column].markShaded();
+      this.parent.hitorilink.board[cell.row][cell.column].markShaded();
+    } else if (cell.unshaded) {
+      this.parent.hitori.board[cell.row][cell.column].markUnshaded();
+      this.parent.hitorilink.board[cell.row][cell.column].markUnshaded();
+    } else {
+      this.parent.hitori.board[cell.row][cell.column].markVague();
+      this.parent.hitorilink.board[cell.row][cell.column].markVague();
+    }
+    this.parent.shikaku.update();
+    this.parent.hitori.update();
+    this.parent.hitorilink.update();
   }
 }
