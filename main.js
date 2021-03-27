@@ -90,6 +90,7 @@ Akari light bulb <-> Real Shikaku clue
 akariDiv.appendChild(game.akari.node);
 $container.appendChild(akariDiv);
 game.akari.populate(akariGivens);
+game.akari.addButton();
 game.akari.update();
 
 const shikakuDiv = document.createElement("div");
