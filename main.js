@@ -2,13 +2,13 @@
 const game = new Octathlon(10, 10);
 
 // Get some fixed divs
-const $container = document.getElementById("container");
-const $indicator = document.getElementById("indicator");
+const $container = $("container");
+const $indicator = $("indicator");
 $container.classList.add("mark-cells");
 $indicator.innerText = "Mark cell centers";
-const $snapshot = document.getElementById("snapshot");
+const $snapshot = $("snapshot");
 $snapshot.addEventListener("click", (e) => game.download());
-const $restore = document.getElementById("restore");
+const $restore = $("restore");
 $restore.addEventListener("click", (e) => game.upload());
 
 const toggle = (e) => {
@@ -28,7 +28,31 @@ const toggle = (e) => {
 document.addEventListener("keypress", toggle);
 $indicator.addEventListener("click", toggle);
 
+$canvas = $("canvas");
+$canvas.appendChild(game.node);
+
+const test = new Puzzle(game);
+test.initializeCells();
+test.update();
+game.node.appendChild(test.node);
+
+/*
 // Generate the grid of puzzles
+
+document.getElementById("canvas").style =
+  "width: 100%, height: auto; aspect-ratio: 1/1";
+const canvas = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+canvas.preserveAspectRatio = "xMidyMin meet";
+canvas.setAttribute("viewBox", "0 0 1600 1600");
+//canvas.setAttribute("preserveAspectRatio", "xMidyMin meet");
+canvas.setAttribute("width", "100%");
+// canvas.setAttribute("height", "auto");
+document.getElementById("canvas").appendChild(canvas);
+const blah = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+blah.setAttribute("cx", 200);
+blah.setAttribute("cy", 200);
+blah.setAttribute("r", 200);
+canvas.appendChild(blah);
 
 // The Kurodoko grid in row 1, column 3
 const kurodokoDiv = document.createElement("div");
@@ -221,3 +245,5 @@ corralsyuDiv.appendChild(game.corralsyu.node);
 $container.appendChild(corralsyuDiv);
 game.corralsyu.populate(corralGivens, masyuGivens);
 game.corralsyu.update();
+
+*/

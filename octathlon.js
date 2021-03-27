@@ -18,6 +18,9 @@ class Octathlon {
     this.slitherlink = new Slitherlink(this);
 
     this.markVertices = false;
+
+    this.node = newSVG("svg");
+    this.node.setAttributes({ viewBox: "0 0 1600 1600", width: "100%" });
   }
 
   // Take snapshot of current octathlon state (in a way that doesn't create a recursive object)

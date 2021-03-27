@@ -1,6 +1,3 @@
-// Underscore used to mark unknowns/unmarked cells - a convention used in filling in givens
-const _ = -1;
-
 // The specific Akari grid we are given (underscore == no clue given)
 const akariGivens = [
   [_, 1, 2, _, _, 1, _, _, 3, 1],

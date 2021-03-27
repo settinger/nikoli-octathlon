@@ -1,7 +1,3 @@
-const make2dArray = (rows, columns, value = 0) => {
-  return Array.from(Array(rows), (row) => Array.from(columns).fill(value));
-};
-
 // Generic classes for a single cell and a single puzzle grid
 class Cell {
   constructor(row, column) {
@@ -10,7 +6,14 @@ class Cell {
     this.width = 30; // Fixed value, change this later
     this.height = 30; // Fixed value, change this later
     this.neighbors = { top: -1, bottom: -1, left: -1, right: -1 };
-    this.node = document.createElement("td");
+    this.node = newSVG("svg");
+    this.node.setAttributes({
+      x: 0,
+      y: 0,
+      width: this.width,
+      height: this.height,
+      viewBox: "0 0 100 100",
+    });
 
     // Most games use some of the following properties
     this.value = -1;
@@ -199,6 +202,15 @@ class Cell {
       }
     }
   }
+
+  // Update cell's HTML representation
+  update() {
+    // Clear current node properties
+    this.node.innerHTML = "";
+    let wreck = newSVG("rect");
+    wreck.setAttributes({ x: 0, y: 0, height: 50, width: 50, fill: "pink" });
+    this.node.appendChild(wreck);
+  }
 }
 
 class Puzzle {
@@ -209,13 +221,19 @@ class Puzzle {
     this.board = make2dArray(this.rows, this.columns);
     this.complete = false;
     this.valid = true;
-    this.node = document.createElement("table");
-    this.node.classList.add("puzzlegrid");
-    this.node.addEventListener("mouseleave", (e) => {
-      document.getElementById("cellstyle").innerText = ``;
-    });
+    // this.node = document.createElement("table");
+    this.node = newSVG("svg");
+    //this.node.classList.add("puzzlegrid");
+    //this.node.addEventListener("mouseleave", (e) => {
+    //  document.getElementById("cellstyle").innerText = ``;
+    //});
 
     this.cellType = Cell;
+  }
+
+  // Set the location of this board within the parent SVG
+  insert(x, y, height = 400, width = 400) {
+    this.node.setParameters({ x, y, height, width });
   }
 
   // Initially, this.board is an empty 2d array. initializeCells() has to be called in order to fill in the board.
@@ -291,16 +309,22 @@ class Puzzle {
   update() {
     // Clear existing grid
     this.node.innerHTML = "";
-    for (let row of this.board) {
-      const newRow = document.createElement("tr");
-      for (let cell of row) {
-        cell.update();
-        newRow.appendChild(cell.node);
-      }
-      const padding = document.createElement("td");
-      padding.classList.add("table-padding");
-      newRow.appendChild(padding);
-      this.node.appendChild(newRow);
-    }
+    this.board.flat().forEach((cell) => {
+      cell.update();
+      cell.node.setAttributes({ x: cell.row * 35, y: cell.row * 35 });
+      this.node.appendChild(cell.node);
+    });
+
+    // for (let row of this.board) {
+    //   const newRow = document.createElement("tr");
+    //   for (let cell of row) {
+    //     cell.update();
+    //     newRow.appendChild(cell.node);
+    //   }
+    //   const padding = document.createElement("td");
+    //   padding.classList.add("table-padding");
+    //   newRow.appendChild(padding);
+    //   this.node.appendChild(newRow);
+    // }
   }
 }

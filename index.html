@@ -9,18 +9,22 @@
     <style id="cellstyle"></style>
   </head>
   <body>
-    <div id="container">
-      <div class="title">
-        <h1>Nikoli Octathlon</h1>
-        <h2>By Palmer "MellowMelon" Mebane, February 2010</h2>
-        <h2>Applet by Sam Ettinger, March 2021</h2>
-        <div id="indicator"></div>
-        <div>
-          <button id="snapshot">Save Snapshot</button>
-          <button id="restore">Restore from Snapshot</button>
-        </div>
+    <div class="title">
+      <h1>Nikoli Octathlon</h1>
+      <h2>By Palmer "MellowMelon" Mebane, February 2010</h2>
+      <h2>Applet by Sam Ettinger, March 2021</h2>
+      <div id="indicator"></div>
+      <div>
+        <button id="snapshot">Save Snapshot</button>
+        <button id="restore">Restore from Snapshot</button>
       </div>
     </div>
+    <div
+      id="canvas"
+      style="width: 100%; min-width: 500px; height: auto; aspect-ratio: 1/1"
+    ></div>
+    <div id="container"></div>
+    <script type="text/javascript" src="helpers.js"></script>
     <script type="text/javascript" src="givens.js"></script>
     <script type="text/javascript" src="puzzle.js"></script>
     <script type="text/javascript" src="akari.js"></script>
