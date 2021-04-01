@@ -85,7 +85,7 @@ class Masyu extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = MasyuCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // When Masyu cell is clicked:

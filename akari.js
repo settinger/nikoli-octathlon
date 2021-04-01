@@ -88,48 +88,25 @@ class AkariCell extends Cell {
     }
   }
 
-  // Update cell's html representation
+  // Update cell's HTML representation
   update() {
-    this.node.innerHTML = "";
+    let classes = this.defaultClasses.slice();
+    this.shaded && classes.push("shaded");
+    this.unshaded && classes.push("unshaded");
+    this.lamp && classes.push("lamp");
+    this.illuminated && classes.push("illuminated");
+    this.auxMark && classes.push("marked");
+    ~this.value && classes.push("clue");
+    ~this.value && this.clueCertainty && this.realClue && classes.push("true");
+    ~this.value &&
+      this.clueCertainty &&
+      !this.realClue &&
+      classes.push("false");
 
-    // Clear CSS classes and re-assign
-    this.node.className = `akari cell row${this.row} col${this.column}`;
-    this.shaded && this.node.classList.add("shaded");
-    this.unshaded && this.node.classList.add("unshaded");
-    this.lamp && this.node.classList.add("lamp");
-    this.illuminated && this.node.classList.add("illuminated");
-    this.auxMark && this.node.classList.add("marked");
+    this.node.className.baseVal = "";
+    this.node.classList.add(...classes);
 
-    // If there is a value in the cell, indicate the truth status of that clue
-    // If the clue is known true, add a circle div
-    if (~this.value) {
-      this.node.innerText = String(this.value);
-      this.node.classList.add("clue");
-      if (this.clueCertainty) {
-        if (!this.realClue) {
-          this.node.classList.add("false");
-        } else {
-          this.node.classList.add("true");
-          const truthRing = document.createElement("div");
-          truthRing.classList.add("true", "clue");
-          this.node.appendChild(truthRing);
-        }
-      }
-    }
-
-    // If there is a lamp in the cell, add a big circle
-    if (this.lamp) {
-      const light = document.createElement("div");
-      light.classList.add("lamp");
-      this.node.appendChild(light);
-    }
-
-    // If there is an auxiliary mark in the cell, add a small green circle
-    if (this.auxMark) {
-      const dot = document.createElement("div");
-      dot.classList.add("marked");
-      this.node.appendChild(dot);
-    }
+    this.nodeText.textContent = ~this.value ? this.value : "";
   }
 }
 
@@ -137,7 +114,7 @@ class Akari extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = AkariCell;
-    this.initializeCells();
+    this.initialize();
 
     this.illuminated = false;
   }

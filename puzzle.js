@@ -3,17 +3,47 @@ class Cell {
   constructor(row, column) {
     this.row = row;
     this.column = column;
-    this.width = 30; // Fixed value, change this later
-    this.height = 30; // Fixed value, change this later
+    this.width = 10; // Fixed value, change this later
+    this.height = 10; // Fixed value, change this later
+    this.x = this.width * this.column;
+    this.y = this.height * this.row;
     this.neighbors = { top: -1, bottom: -1, left: -1, right: -1 };
-    this.node = newSVG("svg");
+    this.node = newSVG("g");
+    this.defaultClasses = ["cell", `row${this.row}`, `col${this.column}`];
+    this.node.classList.add(...this.defaultClasses);
     this.node.setAttributes({
-      x: 0,
-      y: 0,
+      x: this.x,
+      y: this.y,
       width: this.width,
       height: this.height,
-      viewBox: "0 0 100 100",
     });
+    // this.node.addEventListener("click", (e) => {
+    //   console.log(`${this.row}x${this.column}`);
+    // });
+    this.nodeRect = newSVG("rect");
+    this.node.appendChild(this.nodeRect);
+    this.nodeRect.setAttributes({
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height,
+    });
+    this.nodeText = newSVG("text");
+    this.nodeText.setAttributes({
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2,
+      "text-anchor": "middle",
+      "alignment-baseline": "central",
+      "font-size": this.height * 0.75,
+    });
+    this.node.appendChild(this.nodeText);
+    this.nodeCircle = newSVG("circle");
+    this.nodeCircle.setAttributes({
+      cx: this.x + this.width / 2,
+      cy: this.y + this.height / 2,
+      fill: "none",
+    });
+    this.node.appendChild(this.nodeCircle);
 
     // Most games use some of the following properties
     this.value = -1;
@@ -205,11 +235,20 @@ class Cell {
 
   // Update cell's HTML representation
   update() {
-    // Clear current node properties
-    this.node.innerHTML = "";
-    let wreck = newSVG("rect");
-    wreck.setAttributes({ x: 0, y: 0, height: 50, width: 50, fill: "pink" });
-    this.node.appendChild(wreck);
+    let classes = this.defaultClasses.slice();
+    this.shaded && classes.push("shaded");
+    this.unshaded && classes.push("unshaded");
+    ~this.value && classes.push("clue");
+    ~this.value && this.clueCertainty && this.realClue && classes.push("true");
+    ~this.value &&
+      this.clueCertainty &&
+      !this.realClue &&
+      classes.push("false");
+
+    this.node.className.baseVal = "";
+    this.node.classList.add(...classes);
+
+    this.nodeText.textContent = ~this.value ? this.value : "";
   }
 }
 
@@ -218,26 +257,37 @@ class Puzzle {
     this.parent = parent;
     this.rows = parent.rows;
     this.columns = parent.columns;
+    this.name = "Puzzle name";
+    this.description = "Puzzle description";
     this.board = make2dArray(this.rows, this.columns);
     this.complete = false;
     this.valid = true;
-    // this.node = document.createElement("table");
+    this.cellType = Cell;
+
+    // By default: assume puzzle uses a grid between cells, no walls, no loops, no edges
+    this.useGrid = true;
+    this.useWalls = false;
+    this.useLoops = false;
+    this.useEdges = false;
+    this.useCrosses = false;
+
     this.node = newSVG("svg");
-    //this.node.classList.add("puzzlegrid");
+    this.node.classList.add("board");
+    this.node.setAttributes({
+      viewBox: `-5 -5 110 110`,
+      width: "100%",
+    });
+
     //this.node.addEventListener("mouseleave", (e) => {
     //  document.getElementById("cellstyle").innerText = ``;
     //});
-
-    this.cellType = Cell;
   }
 
-  // Set the location of this board within the parent SVG
-  insert(x, y, height = 400, width = 400) {
-    this.node.setParameters({ x, y, height, width });
-  }
+  // Initially, this.board is an empty 2d array. initialize() has to be called in order to fill in the board and set some final properties.
+  initialize() {
+    this.token = this.name.toLowerCase().split(" ").join("");
+    this.node.classList.add(this.token);
 
-  // Initially, this.board is an empty 2d array. initializeCells() has to be called in order to fill in the board.
-  initializeCells() {
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.columns; col++) {
         // Initialize a new cell
@@ -259,12 +309,14 @@ class Puzzle {
           event.preventDefault();
           this.clickCell(newCell, event, false);
         });
+        /*
         newCell.node.addEventListener("mouseover", (event) => {
           document.getElementById("cellstyle").innerText = this.parent
             .markVertices
             ? `td.row${newCell.row}.col${newCell.column} {border-color: #8888ff;}`
             : `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
         });
+        */
 
         this.board[row][col] = newCell;
       }
@@ -272,6 +324,7 @@ class Puzzle {
 
     // Once every cell in the board is populated, fill in the cell neighbors property
     this.populateNeighbors();
+    this.appendChildren();
   }
 
   // Every cell has a neighbors property that should be filled in
@@ -295,6 +348,186 @@ class Puzzle {
     }
   }
 
+  // Append cells, grid, walls, etc as child elements of the main SVG element
+  appendChildren() {
+    // First children of the puzzle element: the cells
+    this.board.flat().forEach((cell) => {
+      this.node.appendChild(cell.node);
+    });
+    // Next, the grid between the cells (if used)
+    if (this.useGrid) {
+      this.grid = newSVG("path");
+      this.grid.classList.add("grid", this.token);
+      this.grid.update = () => {
+        let bottom = 10 * this.rows;
+        let right = 10 * this.columns;
+        let path = "";
+        for (let row = 0; row <= this.rows; row++) {
+          path += `M 0 ${10 * row} L ${right} ${10 * row} `;
+        }
+        for (let col = 0; col <= this.columns; col++) {
+          path += `M ${10 * col} 0 L ${10 * col} ${bottom} `;
+        }
+        this.grid.setAttributes({ d: path, stroke: "grey", "stroke-width": 1 });
+      };
+      this.node.appendChild(this.grid);
+    }
+
+    // Wall node (if used)
+    if (this.useWalls) {
+      this.walls = newSVG("path");
+      this.walls.classList.add("walls", this.token);
+      this.walls.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.walls.left) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 0 10 `;
+          }
+          if (cell.walls.top) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 10 0 `;
+          }
+          if (cell.column == this.columns - 1 && cell.walls.right) {
+            path += `M ${cell.column * 10 + 10} ${cell.row * 10} l 0 10 `;
+          }
+          if (cell.row == this.rows - 1 && cell.walls.bottom) {
+            path += `M ${cell.column * 10} ${cell.row * 10 + 10} l 10 0 `;
+          }
+        });
+        this.walls.setAttributes({
+          d: path,
+          stroke: "black",
+          "stroke-width": 2.5,
+          "stroke-linecap": "round",
+        });
+      };
+      this.node.appendChild(this.walls);
+    }
+
+    // Bridges nodes (if used)
+    if (this.useBridges) {
+      this.bridges = newSVG("path");
+      this.bridges.classList.add("bridges", this.token);
+      this.bridges.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.bridges.left) {
+            path += `M ${cell.column * 10 + 3} ${cell.row * 10 + 5} l -6 0 `;
+          }
+          if (cell.bridges.top) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 3} l 0 -6 `;
+          }
+          if (cell.column == this.columns - 1 && cell.bridges.right) {
+            path += `M ${cell.column * 10 + 7} ${cell.row * 10 + 5} l 6 0 `;
+          }
+          if (cell.row == this.rows - 1 && cell.bridges.bottom) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 7} l 0 6 `;
+          }
+        });
+        this.bridges.setAttributes({
+          d: path,
+          stroke: "green",
+          "stroke-width": 1.5,
+          "stroke-linecap": "round",
+        });
+      };
+      this.node.appendChild(this.bridges);
+    }
+
+    // Loops node (if used)
+    if (this.useLoops) {
+      this.loops = newSVG("path");
+      this.loops.classList.add("loops", this.token);
+      this.loops.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.loops.left) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l -10 0 `;
+          }
+          if (cell.loops.top) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 0 -10 `;
+          }
+          if (cell.column == this.columns - 1 && cell.loops.right) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 10 0 `;
+          }
+          if (cell.row == this.rows - 1 && cell.loops.bottom) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 0 10 `;
+          }
+        });
+        this.loops.setAttributes({
+          d: path,
+          stroke: "blue",
+          "stroke-width": 2.5,
+          "stroke-linecap": "round",
+        });
+      };
+      this.node.appendChild(this.loops);
+    }
+
+    // Crosses node (if used) {
+    if (this.useCrosses) {
+      this.crosses = newSVG("path");
+      this.crosses.classList.add("crosses", this.token);
+      this.crosses.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.crosses.left) {
+            path += `M ${cell.column * 10} ${
+              cell.row * 10 + 5
+            } m -2 -2 l 4 4 m -4 0 l 4 -4 `;
+          }
+          if (cell.crosses.top) {
+            path += `M ${cell.column * 10 + 5} ${
+              cell.row * 10
+            } m -2 -2 l 4 4 m -4 0 l 4 -4 `;
+          }
+          if (cell.column == this.columns - 1 && cell.crosses.right) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 10 0 `;
+          }
+          if (cell.row == this.rows - 1 && cell.crosses.bottom) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 0 10 `;
+          }
+        });
+        this.crosses.setAttributes({
+          d: path,
+          stroke: "red",
+          "stroke-width": 1.5,
+          "stroke-linecap": "flat",
+        });
+      };
+      this.node.appendChild(this.crosses);
+    }
+
+    // Edges node (if used)
+    if (this.useEdges) {
+      this.edges = newSVG("path");
+      this.edges.classList.add("edges", this.token);
+      this.edges.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.edges.left) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 0 10 `;
+          }
+          if (cell.edges.top) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 10 0 `;
+          }
+          if (cell.column == this.columns - 1 && cell.edges.right) {
+            path += `M ${cell.column * 10 + 10} ${cell.row * 10} l 0 10 `;
+          }
+          if (cell.row == this.rows - 1 && cell.edges.bottom) {
+            path += `M ${cell.column * 10} ${cell.row * 10 + 10} l 10 0 `;
+          }
+        });
+        this.edges.setAttributes({
+          d: path,
+          stroke: "blue",
+          "stroke-width": 2.5,
+          "stroke-linecap": "flat",
+        });
+      };
+      this.node.appendChild(this.edges);
+    }
+  }
+
   // Initialize the cell values from a given array
   populate(array) {
     this.board.flat().forEach((cell) => {
@@ -307,24 +540,29 @@ class Puzzle {
 
   // Update the table element
   update() {
-    // Clear existing grid
-    this.node.innerHTML = "";
+    // Update each cell
     this.board.flat().forEach((cell) => {
       cell.update();
-      cell.node.setAttributes({ x: cell.row * 35, y: cell.row * 35 });
-      this.node.appendChild(cell.node);
     });
 
-    // for (let row of this.board) {
-    //   const newRow = document.createElement("tr");
-    //   for (let cell of row) {
-    //     cell.update();
-    //     newRow.appendChild(cell.node);
-    //   }
-    //   const padding = document.createElement("td");
-    //   padding.classList.add("table-padding");
-    //   newRow.appendChild(padding);
-    //   this.node.appendChild(newRow);
-    // }
+    // Update grid, walls, bridges, loops, crosses, edges
+    if (this.useGrid) {
+      this.grid.update();
+    }
+    if (this.useWalls) {
+      this.walls.update();
+    }
+    if (this.useBridges) {
+      this.bridges.update();
+    }
+    if (this.useLoops) {
+      this.loops.update();
+    }
+    if (this.useCrosses) {
+      this.crosses.update();
+    }
+    if (this.useEdges) {
+      this.edges.update();
+    }
   }
 }

@@ -14,8 +14,8 @@ body {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
   text-align: center;
-  margin: 20px;
   padding: 4%;
+  min-width: 800px;
   min-height: 200px;
 }
 
@@ -39,115 +39,82 @@ body {
   justify-content: center;
 }
 
+.puzzleName {
+  user-select: none;
+}
+
 .rules {
+  user-select: none;
   font-size: 0.7em;
 }
 
-/* the actual 10x10 grid */
-.puzzlegrid {
-  font-weight: bold;
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 90%;
-  position: relative;
-  user-select: none;
-  margin: 10px;
+/* Default styling for cells and things inside the grid */
+.cell {
+  pointer-events: bounding-box;
+  fill: none;
 }
 
-/* cells inside the 10x10 grid */
-td.cell {
-  border: 1px solid black;
-  background-color: white;
-  width: 30px;
-  height: 30px;
-  position: relative;
+.cell:not(.shaded):not(.unshaded) {
+  fill: #dddddd;
 }
 
-td.table-padding {
-  width: auto;
-  border: none !important;
-  background-color: white !important;
+.cell.shaded {
+  fill: black;
 }
 
-td.uncertain {
-  background-color: #dddddd;
+.cell.unshaded {
+  fill: white;
 }
 
-td.certain {
-  background-color: white;
+circle {
+  fill: none;
+  stroke: none;
+  r: 0;
 }
 
-td.topwall {
-  border-top: 5px solid black;
-}
-
-td.leftwall {
-  border-left: 5px solid black;
-}
-
-td.rightwall {
-  border-right: 5px solid black;
-}
-
-td.bottomwall {
-  border-bottom: 5px solid black;
-}
-
-td.topbridge {
-  border-top: 1px dashed black;
-}
-
-td.leftbridge {
-  border-left: 1px dashed black;
-}
-
-td.rightbridge {
-  border-right: 1px dashed black;
-}
-td.bottombridge {
-  border-bottom: 1px dashed black;
-}
-
-/* Any divs inside a cell have certain properties */
-td div {
-  position: absolute;
+text {
   pointer-events: none;
-  z-index: 2;
+  user-select: none;
 }
 
-/*
-div.topbridge {
-  background: green;
-  width: 8%;
-  height: 70%;
-  left: 46%;
-  top: -35%;
+.clue text {
+  fill: black;
 }
 
-div.leftbridge {
-  background: green;
-  width: 70%;
-  height: 8%;
-  left: -35%;
-  top: 46%;
+.clue.shaded text {
+  fill: white;
 }
 
-div.rightbridge {
-  background: green;
-  width: 70%;
-  height: 8%;
-  left: 65%;
-  top: 46%;
+.clue.false text {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.1;
 }
 
-div.bottombridge {
-  background: green;
-  width: 8%;
-  height: 70%;
-  left: 46%;
-  top: 65%;
+.shaded.clue.false text {
+  stroke: white;
 }
-*/
+
+.clue.true circle {
+  fill: none;
+  stroke: black;
+  stroke-width: 1;
+  r: 4;
+}
+
+.clue.true.shaded circle {
+  stroke: white;
+}
+
+.grid,
+.walls,
+.loops,
+.edges,
+.crosses,
+circle,
+text {
+  pointer-events: none;
+}
 
 div.toploop {
   background: rgba(0, 0, 255, 0.5);
@@ -250,72 +217,28 @@ div.bottomcross {
 }
 
 /* Akari-specific styling */
-td.akari.illuminated {
-  background-color: greenyellow;
+.akari .illuminated {
+  fill: greenyellow;
 }
 
-td.akari.shaded {
-  background-color: black;
-  color: white;
+.akari .shaded {
+  fill: black;
 }
 
-td.akari.unshaded:not(.illuminated) {
-  background-color: white;
+.akari .unshaded:not(.illuminated) {
+  fill: white;
 }
 
-.akari td:not(.shaded):not(.unshaded) {
-  color: black;
-  background-color: #dddddd;
+.akari .lamp circle {
+  r: 4;
+  fill: green;
+  stroke: none;
 }
 
-.akari div.lamp {
-  position: absolute;
-  top: 10%;
-  left: 10%;
-  z-index: 2;
-  background: green;
-  border-radius: 50%;
-  width: 80%;
-  height: 80%;
-}
-
-.akari div.marked {
-  top: 45%;
-  left: 45%;
-  background-color: green;
-  border-radius: 50%;
-  width: 10%;
-  height: 10%;
-}
-
-.akari .false:not(.shaded) {
-  color: white;
-  text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
-    -0.5px -0.5px 0 black;
-}
-
-.akari .false.shaded {
-  color: black;
-  text-shadow: -0.5px 0.5px 0 white, 0.5px 0.5px 0 white, 0.5px -0.5px 0 white,
-    -0.5px -0.5px 0 white;
-}
-
-.akari :not(.shaded) div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-}
-
-.akari .shaded div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid white;
-  border-radius: 50%;
+.akari .marked circle {
+  r: 0.8;
+  fill: green;
+  stroke: none;
 }
 
 /* Corral specific styling */
@@ -354,49 +277,16 @@ td.akari.unshaded:not(.illuminated) {
 }
 
 /*Heyawake specific styling */
-.heyawake .shaded {
-  background-color: green;
-  color: white;
+.heyawake .cell.shaded {
+  fill: green;
 }
 
-.heyawake .unshaded {
-  background-color: greenyellow;
+.heyawake .cell.unshaded {
+  fill: greenyellow;
 }
 
-.heyawake :not(.shaded):not(.unshaded).false {
-  color: #dddddd;
-  text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
-    -0.5px -0.5px 0 black;
-}
-
-.heyawake .shaded.false {
-  color: green;
-  text-shadow: -0.5px 0.5px 0 white, 0.5px 0.5px 0 white, 0.5px -0.5px 0 white,
-    -0.5px -0.5px 0 white;
-}
-
-.heyawake .unshaded.false {
-  color: greenyellow;
-  text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
-    -0.5px -0.5px 0 black;
-}
-
-.heyawake :not(.shaded) div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-}
-
-.heyawake .shaded div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid white;
-  border-radius: 50%;
+.heyawake .cell:not(.shaded):not(.unshaded) {
+  fill: white;
 }
 
 /* Hitori specific styling */
@@ -416,34 +306,21 @@ td.akari.unshaded:not(.illuminated) {
   background-color: #dddddd;
 }
 
-/* Kurodoko specific styling */
-.kurodoko .shaded {
-  background-color: black;
+/* Kurodoko and Nurikabe specific styling */
+
+.kurodoko .clue circle,
+.nurikabe .clue circle {
+  stroke: black;
+  fill: none;
+  stroke-width: 1;
+  r: 4.5;
 }
 
-.kurodoko div.clue {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-  background-color: white;
-  padding-top: 3px;
-}
-
-.kurodoko .bounded {
-  font-size: 0.5em;
-  font-weight: normal;
-}
-
-.kurodoko div.marked {
-  top: 45%;
-  left: 45%;
-  background-color: black;
-  border-radius: 50%;
-  width: 10%;
-  height: 10%;
+.kurodoko .unshaded:not(.clue) circle,
+.nurikabe .unshaded:not(.clue) circle {
+  stroke: none;
+  fill: black;
+  r: 0.8;
 }
 
 /* Masyu specific styling */
@@ -470,36 +347,6 @@ td.akari.unshaded:not(.illuminated) {
 
 .masyu .false .pearl.white {
   background-color: #dddddd;
-}
-
-/* Nurikabe specific styling */
-.nurikabe .shaded {
-  background-color: black;
-}
-
-.nurikabe div.clue {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-  background-color: white;
-  padding-top: 3px;
-}
-
-.nurikabe .bounded {
-  font-size: 0.5em;
-  font-weight: normal;
-}
-
-.nurikabe div.marked {
-  top: 45%;
-  left: 45%;
-  background-color: black;
-  border-radius: 50%;
-  width: 10%;
-  height: 10%;
 }
 
 /* Shikaku specific styling */

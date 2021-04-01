@@ -3,6 +3,7 @@ class ShikakuCell extends Cell {
     super(row, column);
   }
 
+  /*
   // Update cell's html representation
   update() {
     this.node.innerHTML = "";
@@ -36,13 +37,14 @@ class ShikakuCell extends Cell {
       }
     }
   }
+  */
 }
 
 class Shikaku extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = ShikakuCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // What to do when a cell is clicked

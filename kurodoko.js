@@ -13,42 +13,26 @@ class KurodokoCell extends Cell {
     this.value = clue;
   }
 
-  // Update cell's html form
+  // Update cell's HTML representation
   update() {
-    this.node.innerHTML = "";
-    this.node.className = `kurodoko cell row${this.row} col${this.column}`;
-    this.shaded && this.node.classList.add("shaded");
-    this.unshaded && this.node.classList.add("unshaded");
+    let classes = this.defaultClasses.slice();
+    this.shaded && classes.push("shaded");
+    this.unshaded && classes.push("unshaded");
+    ~this.originalValue && classes.push("clue");
 
-    // If the cell has a value, put it in a circle div
-    if (~this.originalValue) {
-      this.node.classList.add("clue");
-      const clue = document.createElement("div");
-      clue.classList.add("clue");
-      clue.innerText = ~this.value ? String(this.value) : "";
-      // if (this.upperBound == this.lowerBound) {
-      //   clue.innerText = this.upperBound;
-      // } else {
-      //   clue.classList.add("bounded");
-      //   clue.innerHTML = `&ge;${this.lowerBound}<br/>&le;${this.upperBound}`;
-      // }
-      this.node.appendChild(clue);
-    }
+    this.node.className.baseVal = "";
+    this.node.classList.add(...classes);
 
-    // If the cell is marked unshaded (and no clue), put an auxiliary mark
-    if (this.unshaded && !~this.originalValue) {
-      const dot = document.createElement("div");
-      dot.classList.add("marked");
-      this.node.appendChild(dot);
-    }
+    this.nodeText.textContent = ~this.value ? this.value : "";
   }
 }
 
 class Kurodoko extends Puzzle {
   constructor(parent) {
     super(parent);
+    this.name = "Kurodoko";
     this.cellType = KurodokoCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // Populate grid with givens

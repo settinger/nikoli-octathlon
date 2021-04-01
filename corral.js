@@ -62,7 +62,7 @@ class Corral extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = CorralCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // When a cell is clicked:

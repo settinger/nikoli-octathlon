@@ -8,7 +8,7 @@ class FillominoCell extends Cell {
     this.node.innerHTML = "";
 
     // Clear CSS classes and re-assign
-    this.node.className = `fillomino cell row${this.row} col${this.column}`;
+    this.node.className.baseVal = `fillomino cell row${this.row} col${this.column}`;
     this.walls.top && this.node.classList.add("topwall");
     this.walls.left && this.node.classList.add("leftwall");
     this.walls.right && this.node.classList.add("rightwall");
@@ -42,7 +42,7 @@ class Fillomino extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = FillominoCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // What to do when a cell is clicked

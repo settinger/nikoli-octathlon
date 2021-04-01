@@ -82,7 +82,7 @@ class CountryRoad extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = CountryRoadCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // What to do when a cell is clicked

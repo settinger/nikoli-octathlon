@@ -20,7 +20,7 @@ class Hitorilink extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = HitorilinkCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // When cell is clicked: Toggle status

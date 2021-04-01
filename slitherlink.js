@@ -109,7 +109,7 @@ class Slitherlink extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = SlitherlinkCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // What to do when a cell is clicked

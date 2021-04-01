@@ -19,8 +19,8 @@ class Octathlon {
 
     this.markVertices = false;
 
-    this.node = newSVG("svg");
-    this.node.setAttributes({ viewBox: "0 0 1600 1600", width: "100%" });
+    // this.node = newSVG("svg");
+    // this.node.setAttributes({ viewBox: "-50 -50 1300 1700", width: "100%" });
   }
 
   // Take snapshot of current octathlon state (in a way that doesn't create a recursive object)

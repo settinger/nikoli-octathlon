@@ -40,7 +40,7 @@ class Corralsyu extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = CorralsyuCell;
-    this.initializeCells();
+    this.initialize();
   }
 
   // Populate this one with Corral and Masyu givens
