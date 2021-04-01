@@ -1,7 +1,7 @@
-class Nurikoro extends Puzzle {
+class Nurikuro extends Puzzle {
   constructor(parent) {
     super(parent);
-    this.name = "Nurikoro";
+    this.name = "Nurikuro";
     this.cellType = Cell;
     this.initialize();
   }

@@ -63,16 +63,16 @@ class Fillomino extends Puzzle {
     if (~cell.value) {
       if (cell.clueCertainty && cell.realClue) {
         this.parent.nurikabe.board[cell.row][cell.column].markUnshaded();
-        this.parent.nurikoro.board[cell.row][cell.column].markUnshaded();
+        this.parent.nurikuro.board[cell.row][cell.column].markUnshaded();
       } else if (cell.clueCertainty && !cell.realClue) {
         this.parent.nurikabe.board[cell.row][cell.column].markShaded();
-        this.parent.nurikoro.board[cell.row][cell.column].markShaded();
+        this.parent.nurikuro.board[cell.row][cell.column].markShaded();
       } else {
         this.parent.nurikabe.board[cell.row][cell.column].markVague();
-        this.parent.nurikoro.board[cell.row][cell.column].markVague();
+        this.parent.nurikuro.board[cell.row][cell.column].markVague();
       }
       this.parent.nurikabe.update();
-      this.parent.nurikoro.update();
+      this.parent.nurikuro.update();
     }
 
     cell.transfer(this.parent.countryRoad, "walls");

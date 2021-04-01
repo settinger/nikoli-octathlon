@@ -100,18 +100,18 @@ game.heyawake.update();
 
 // Nuri-koro grid in row 2 column 4
 // Nurikabe grid in row 1 column 4
-const nurikoroDiv = document.createElement("div");
-nurikoroDiv.style.gridColumn = 4;
-nurikoroDiv.style.gridRow = 2;
-nurikoroDiv.classList.add("puzzle", "nurikabe");
-nurikoroDiv.innerHTML = `
+const nurikuroDiv = document.createElement("div");
+nurikuroDiv.style.gridColumn = 4;
+nurikuroDiv.style.gridRow = 2;
+nurikuroDiv.classList.add("puzzle", "nurikabe");
+nurikuroDiv.innerHTML = `
 <div class="puzzleName">Nurikabe+Kurodoko</div>
 <div class="rules">Clues are sum of Nurikabe and Kurodoko clues<br/>
 Nurikabe shaded cells are Fillomino liars</div>`;
-nurikoroDiv.appendChild(game.nurikoro.node);
-$container.appendChild(nurikoroDiv);
-game.nurikoro.populate(nurikabeGivens);
-game.nurikoro.update();
+nurikuroDiv.appendChild(game.nurikuro.node);
+$container.appendChild(nurikuroDiv);
+game.nurikuro.populate(nurikabeGivens);
+game.nurikuro.update();
 
 
 const shikakuDiv = document.createElement("div");

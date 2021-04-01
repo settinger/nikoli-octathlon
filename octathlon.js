@@ -13,7 +13,7 @@ class Octathlon {
     this.kurodoko = new Kurodoko(this);
     this.masyu = new Masyu(this);
     this.nurikabe = new Nurikabe(this);
-    this.nurikoro = new Nurikoro(this);
+    this.nurikuro = new Nurikuro(this);
     this.shikaku = new Shikaku(this);
     this.slitherlink = new Slitherlink(this);
 
@@ -92,7 +92,7 @@ class Octathlon {
         (cell.shaded << 0) | (cell.unshaded << 1);
     });
 
-    // Using the Nurikabe cells: build array of Nurikoro givens, Nurikabe values, Nurikabe shading / Fillomino clue truth
+    // Using the Nurikabe cells: build array of Nurikuro givens, Nurikabe values, Nurikabe shading / Fillomino clue truth
     this.nurikabe.board.flat().forEach((cell) => {
       snapshot.nurikabeGivens[cell.row][cell.column] = cell.originalValue;
 
@@ -284,8 +284,8 @@ class Octathlon {
         cell.unshaded = getBit(nurikabeShading, 1);
         cell.value = ~nurikabeValues ? nurikabeValues : -1;
 
-        // Nurikoro: use nurikabeGivens, nurikabeShading
-        cell = this.nurikoro.board[row][col];
+        // Nurikuro: use nurikabeGivens, nurikabeShading
+        cell = this.nurikuro.board[row][col];
         cell.value = nurikabeGivens;
         cell.shaded = getBit(nurikabeShading, 0);
         cell.unshaded = getBit(nurikabeShading, 1);
@@ -416,7 +416,7 @@ class Octathlon {
     this.heyawake.update();
     this.kurodoko.update();
     this.nurikabe.update();
-    this.nurikoro.update();
+    this.nurikuro.update();
     this.fillomino.update();
     this.countryRoad.update();
     this.masyu.update();

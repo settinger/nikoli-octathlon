@@ -64,9 +64,9 @@ class Nurikabe extends Puzzle {
       this.parent.fillomino.board[cell.row][cell.column].markUncertainClue();
     }
     this.parent.fillomino.update();
-    this.parent.nurikoro.board[cell.row][cell.column].shaded = cell.shaded;
-    this.parent.nurikoro.board[cell.row][cell.column].unshaded = cell.unshaded;
-    this.parent.nurikoro.update();
+    this.parent.nurikuro.board[cell.row][cell.column].shaded = cell.shaded;
+    this.parent.nurikuro.board[cell.row][cell.column].unshaded = cell.unshaded;
+    this.parent.nurikuro.update();
     if (~cell.originalValue) {
       this.parent.kurodoko.board[cell.row][cell.column].value = ~cell.value
         ? cell.originalValue - cell.value
