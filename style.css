@@ -32,6 +32,10 @@ body {
   padding: 2em;
 }
 
+button {
+  user-select: none;
+}
+
 /* The grid cell that holds the puzzle name, description, and puzzle grid */
 .puzzle {
   display: flex;
@@ -242,38 +246,34 @@ div.bottomcross {
 }
 
 /* Corral specific styling */
-.corral td {
-  border: 1px dashed black;
+.corral rect {
+  fill: white;
 }
 
-.corral .shaded {
-  background-color: greenyellow;
+.corral .shaded rect {
+  fill: greenyellow;
 }
 
-.corral .unshaded {
-  background-color: yellow;
+.corral .unshaded rect {
+  fill: yellow;
+}
+
+.corral text {
+  fill: black;
+}
+
+.corral .grid {
+  stroke-dasharray: 1;
 }
 
 /* Country Road specific styling */
-.countryroad.clue {
-  font-size: 0.75em;
-  font-weight: normal;
+.countryroad rect {
+  fill: white;
 }
 
 /* Fillomino specific styling */
-.fillomino div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-}
-
-.fillomino .false {
-  color: white;
-  text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
-    -0.5px -0.5px 0 black;
+.fillomino rect {
+  fill: white;
 }
 
 /*Heyawake specific styling */
@@ -324,32 +324,29 @@ div.bottomcross {
 }
 
 /* Masyu specific styling */
-.masyu .pearl {
-  color: black;
-  background-color: white;
-  border-radius: 50%;
-  width: 90%;
-  height: 90%;
-  top: 5%;
-  left: 5%;
-  border: 2px solid black;
-  padding-top: 2px;
+.masyu .pearl circle {
+  stroke: black;
+  fill: white;
+  r: 4;
 }
 
-.masyu .pearl.black {
-  color: white;
-  background-color: black;
+.masyu .pearl.black circle {
+  fill: black;
 }
 
-.masyu .false .pearl {
+.masyu .pearl.black text {
+  fill: white;
+}
+
+.masyu .false.pearl circle {
   filter: opacity(50%);
 }
 
-.masyu .false .pearl.white {
-  background-color: #dddddd;
+/* Shikaku specific styling */
+.shikaku rect {
+  fill: white;
 }
 
-/* Shikaku specific styling */
 .shikaku div.true {
   top: 5%;
   left: 5%;
@@ -366,6 +363,16 @@ div.bottomcross {
 }
 
 /* Slitherlink specific styling */
+.slitherlink.grid circle {
+  r: 0.8;
+  fill: black;
+  shape-rendering: geometricPrecision;
+}
+
+.slitherlink .cell rect {
+  fill: white;
+}
+
 .slitherlink td {
   border: none;
 }

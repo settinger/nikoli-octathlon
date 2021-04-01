@@ -1,49 +1,17 @@
+/*
 class ShikakuCell extends Cell {
   constructor(row, column) {
     super(row, column);
   }
-
-  /*
-  // Update cell's html representation
-  update() {
-    this.node.innerHTML = "";
-
-    // Clear CSS classes and re-assign
-    this.node.className = `shikaku cell row${this.row} col${this.column}`;
-    this.walls.top && this.node.classList.add("topwall");
-    this.walls.left && this.node.classList.add("leftwall");
-    this.walls.right && this.node.classList.add("rightwall");
-    this.walls.bottom && this.node.classList.add("bottomwall");
-    this.bridges.top && this.node.classList.add("topbridge");
-    this.bridges.left && this.node.classList.add("leftbridge");
-    this.bridges.right && this.node.classList.add("rightbridge");
-    this.bridges.bottom && this.node.classList.add("bottombridge");
-    //this.node.classList.add(this.clueCertainty ? "certain" : "uncertain");
-
-    // If there is a value in the cell, indicate the truth status of that clue
-    // If the clue is known true, add a circle div
-    if (~this.value) {
-      this.node.innerText = String(this.value);
-      this.node.classList.add("clue");
-      if (this.clueCertainty) {
-        if (!this.realClue) {
-          this.node.classList.add("false");
-        } else {
-          this.node.classList.add("true");
-          const truthRing = document.createElement("div");
-          truthRing.classList.add("true", "clue");
-          this.node.appendChild(truthRing);
-        }
-      }
-    }
-  }
-  */
 }
+*/
 
 class Shikaku extends Puzzle {
   constructor(parent) {
     super(parent);
-    this.cellType = ShikakuCell;
+    this.name = "Shikaku";
+    this.cellType = Cell;
+    this.useWalls = true;
     this.initialize();
   }
 

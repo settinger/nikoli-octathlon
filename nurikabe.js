@@ -2,6 +2,7 @@ class NurikabeCell extends Cell {
   constructor(row, column) {
     super(row, column);
     this.originalValue = -1;
+    this.nodeText.setAttribute("font-size", this.height * 0.6);
   }
 
   // Change the cell's clue value

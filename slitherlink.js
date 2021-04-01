@@ -4,112 +4,44 @@ class SlitherlinkCell extends Cell {
   }
 
   // Change the cell's clue value
-  // Options are: -1 (uncertain), 0, 1, 2, 3, 4
+  // Options are: -1 (uncertain), 0, 1, 2, 3
   toggleValue(leftClick = true) {
     let clue = this.value;
     clue = leftClick ? clue + 1 : clue - 1;
-    clue = ((clue + 7) % 6) - 1;
+    clue = ((clue + 6) % 5) - 1;
     this.value = clue;
-  }
-
-  // Update cell's html representation
-  update() {
-    this.node.innerHTML = "";
-
-    // Clear CSS classes and re-assign
-    this.node.className = `slitherlink cell row${this.row} col${this.column}`;
-    this.edges.top && this.node.classList.add("topedge");
-    this.edges.left && this.node.classList.add("leftedge");
-    this.edges.right && this.node.classList.add("rightedge");
-    this.edges.bottom && this.node.classList.add("bottomedge");
-    this.crosses.top && this.node.classList.add("topcross");
-    this.crosses.left && this.node.classList.add("leftcross");
-    this.crosses.right && this.node.classList.add("rightcross");
-    this.crosses.bottom && this.node.classList.add("bottomcross");
-
-    if (~this.value) {
-      this.node.innerText = String(this.value);
-    }
-
-    // Add corner dots
-    // Top left corner
-    const tlDot = document.createElement("div");
-    tlDot.classList.add("corner");
-    tlDot.style.top = "-5%";
-    tlDot.style.left = "-5%";
-    this.node.appendChild(tlDot);
-    // If cell has no right side neighbor, add top right corner
-    if (!~this.neighbors.right) {
-      const trDot = tlDot.cloneNode();
-      trDot.style.left = "95%";
-      this.node.appendChild(trDot);
-    }
-    // If cell has no neighbor below, add bottom left corner
-    if (!~this.neighbors.bottom) {
-      const blDot = tlDot.cloneNode();
-      blDot.style.top = "95%";
-      this.node.appendChild(blDot);
-    }
-    // If cell has no neighbor below OR to the right, add bottom right corner
-    if (!~this.neighbors.right && !~this.neighbors.bottom) {
-      const brDot = tlDot.cloneNode();
-      brDot.style.top = "95%";
-      brDot.style.left = "95%";
-      this.node.appendChild(brDot);
-    }
-
-    // If there is an edge on the cell, add edge divs
-    // I tried doing this with border CSS and it looked awful
-    if (this.edges.top) {
-      const div = document.createElement("div");
-      div.classList.add("topedge");
-      this.node.appendChild(div);
-    }
-    if (this.edges.left) {
-      const div = document.createElement("div");
-      div.classList.add("leftedge");
-      this.node.appendChild(div);
-    }
-    if (this.edges.right) {
-      const div = document.createElement("div");
-      div.classList.add("rightedge");
-      this.node.appendChild(div);
-    }
-    if (this.edges.bottom) {
-      const div = document.createElement("div");
-      div.classList.add("bottomedge");
-      this.node.appendChild(div);
-    }
-
-    // If there is a cross in the cell, add cross divs
-    if (this.crosses.top) {
-      const div = document.createElement("div");
-      div.classList.add("topcross");
-      this.node.appendChild(div);
-    }
-    if (this.crosses.left) {
-      const div = document.createElement("div");
-      div.classList.add("leftcross");
-      this.node.appendChild(div);
-    }
-    if (this.crosses.right) {
-      const div = document.createElement("div");
-      div.classList.add("rightcross");
-      this.node.appendChild(div);
-    }
-    if (this.crosses.bottom) {
-      const div = document.createElement("div");
-      div.classList.add("bottomcross");
-      this.node.appendChild(div);
-    }
   }
 }
 
 class Slitherlink extends Puzzle {
   constructor(parent) {
     super(parent);
+    this.name = "Slitherlink";
     this.cellType = SlitherlinkCell;
+    this.useEdges = true;
+    this.useCrosses = true;
     this.initialize();
+
+    // Remove original grid, append special Slitherlink grid
+    this.node.removeChild(this.grid);
+    this.grid = newSVG("g");
+    this.grid.classList.add("grid", this.token);
+    this.grid.update = () => {
+      for (let row = 0; row <= this.rows; row++) {
+        for (let col = 0; col <= this.columns; col++) {
+          const dot = newSVG("circle");
+          dot.setAttributes({
+            cx: col * 10,
+            cy: row * 10,
+            fill: "black",
+            r: 0.8,
+            "shape-rendering": "geometricPrecision",
+          });
+          this.grid.appendChild(dot);
+        }
+      }
+    };
+    this.node.appendChild(this.grid);
   }
 
   // What to do when a cell is clicked

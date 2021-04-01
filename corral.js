@@ -17,11 +17,12 @@ class CorralCell extends Cell {
     }
   }
 
+  /*
   // Update cell's HTML form
   update() {
     this.node.innerHTML = "";
 
-    this.node.className = `corral cell row${this.row} col${this.column}`;
+    this.node.className.baseVal = `corral cell row${this.row} col${this.column}`;
     this.edges.top && this.node.classList.add("topedge");
     this.edges.left && this.node.classList.add("leftedge");
     this.edges.right && this.node.classList.add("rightedge");
@@ -56,12 +57,15 @@ class CorralCell extends Cell {
       this.node.appendChild(div);
     }
   }
+  */
 }
 
 class Corral extends Puzzle {
   constructor(parent) {
     super(parent);
     this.cellType = CorralCell;
+    this.useEdges = true;
+    this.useCrosses = true;
     this.initialize();
   }
 

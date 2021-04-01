@@ -3,36 +3,32 @@ class CorralsyuCell extends Cell {
     super(row, column);
     this.corralValue = -1;
     this.masyuValue = -1;
+    this.nodeText.setAttribute("font-size", this.height * 0.6);
   }
 
-  // Update cell's HTML form
+  // Update cell's HTML representation
   update() {
-    this.node.innerHTML = "";
+    let classes = this.defaultClasses.slice();
+    this.shaded && classes.push("shaded");
+    this.unshaded && classes.push("unshaded");
+    ~this.masyuValue && classes.push("pearl");
+    classes.push(!!this.masyuValue ? "white" : "black");
+    ~this.masyuValue && this.realClue && classes.push("true");
+    ~this.masyuValue && !this.realClue && classes.push("false");
 
-    this.node.className = `corralsyu corral masyu cell row${this.row} col${this.column}`;
+    ~this.masyuValue &&
+      this.clueCertainty &&
+      this.realClue &&
+      classes.push("true");
+    ~this.masyuValue &&
+      this.clueCertainty &&
+      !this.realClue &&
+      classes.push("false");
 
-    // Shade the cell with corral colors
-    this.shaded && this.node.classList.add("shaded");
-    this.unshaded && this.node.classList.add("unshaded");
+    this.node.className.baseVal = "";
+    this.node.classList.add(...classes);
 
-    // For Masyu, ignore clueCertainty property, treat all cells as either true or false
-    this.node.classList.add(this.realClue ? "true" : "false");
-
-    // If cell is shaded (black pearl), add a black pearl div
-    if (~this.masyuValue && !this.masyuValue) {
-      const div = document.createElement("div");
-      div.classList.add("pearl", "black");
-      div.innerText = String(this.corralValue);
-      this.node.appendChild(div);
-    }
-
-    // If cell is unshaded (white pearl), add a white pearl div
-    if (~this.masyuValue && this.masyuValue) {
-      const div = document.createElement("div");
-      div.classList.add("pearl", "white");
-      div.innerText = String(this.corralValue);
-      this.node.appendChild(div);
-    }
+    this.nodeText.textContent = ~this.corralValue ? this.corralValue : "";
   }
 }
 

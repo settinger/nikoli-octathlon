@@ -28,15 +28,6 @@ class Cell {
       width: this.width,
       height: this.height,
     });
-    this.nodeText = newSVG("text");
-    this.nodeText.setAttributes({
-      x: this.x + this.width / 2,
-      y: this.y + this.height / 2,
-      "text-anchor": "middle",
-      "alignment-baseline": "central",
-      "font-size": this.height * 0.75,
-    });
-    this.node.appendChild(this.nodeText);
     this.nodeCircle = newSVG("circle");
     this.nodeCircle.setAttributes({
       cx: this.x + this.width / 2,
@@ -44,6 +35,15 @@ class Cell {
       fill: "none",
     });
     this.node.appendChild(this.nodeCircle);
+    this.nodeText = newSVG("text");
+    this.nodeText.setAttributes({
+      x: this.x + this.width / 2,
+      y: this.y + this.height / 2,
+      "text-anchor": "middle",
+      "alignment-baseline": "central",
+      "font-size": this.height * 0.7,
+    });
+    this.node.appendChild(this.nodeText);
 
     // Most games use some of the following properties
     this.value = -1;
@@ -116,9 +116,10 @@ class Cell {
   // Positive x = right side of cell
   // Positive y = bottom of cell
   eventDirection(event) {
+    let cellDOM = this.node.getBoundingClientRect();
     let [x, y] = [
-      event.offsetX - this.width / 2,
-      event.offsetY - this.height / 2,
+      event.clientX - cellDOM.left - cellDOM.width / 2,
+      event.clientY - cellDOM.top - cellDOM.height / 2,
     ];
     // Figure out if event is in the top, left, right, or bottom of cell
     if (x < 0 && -x > Math.abs(y)) {
@@ -278,9 +279,9 @@ class Puzzle {
       width: "100%",
     });
 
-    //this.node.addEventListener("mouseleave", (e) => {
-    //  document.getElementById("cellstyle").innerText = ``;
-    //});
+    this.node.addEventListener("mouseleave", (e) => {
+      document.getElementById("cellstyle").innerText = ``;
+    });
   }
 
   // Initially, this.board is an empty 2d array. initialize() has to be called in order to fill in the board and set some final properties.
@@ -309,14 +310,13 @@ class Puzzle {
           event.preventDefault();
           this.clickCell(newCell, event, false);
         });
-        /*
+
         newCell.node.addEventListener("mouseover", (event) => {
           document.getElementById("cellstyle").innerText = this.parent
             .markVertices
-            ? `td.row${newCell.row}.col${newCell.column} {border-color: #8888ff;}`
-            : `td.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
+            ? `.row${newCell.row}.col${newCell.column} {border-color: #8888ff;}`
+            : `.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
         });
-        */
 
         this.board[row][col] = newCell;
       }
@@ -350,9 +350,11 @@ class Puzzle {
 
   // Append cells, grid, walls, etc as child elements of the main SVG element
   appendChildren() {
+    this.cells = newSVG("g");
+    this.node.appendChild(this.cells);
     // First children of the puzzle element: the cells
     this.board.flat().forEach((cell) => {
-      this.node.appendChild(cell.node);
+      this.cells.appendChild(cell.node);
     });
     // Next, the grid between the cells (if used)
     if (this.useGrid) {
@@ -368,7 +370,12 @@ class Puzzle {
         for (let col = 0; col <= this.columns; col++) {
           path += `M ${10 * col} 0 L ${10 * col} ${bottom} `;
         }
-        this.grid.setAttributes({ d: path, stroke: "grey", "stroke-width": 1 });
+        this.grid.setAttributes({
+          d: path,
+          stroke: "grey",
+          "stroke-width": 0.5,
+          "shape-rendering": "crisp-edges",
+        });
       };
       this.node.appendChild(this.grid);
     }
@@ -473,12 +480,12 @@ class Puzzle {
           if (cell.crosses.left) {
             path += `M ${cell.column * 10} ${
               cell.row * 10 + 5
-            } m -2 -2 l 4 4 m -4 0 l 4 -4 `;
+            } m -1 -1 l 2 2 m -2 0 l 2 -2 `;
           }
           if (cell.crosses.top) {
             path += `M ${cell.column * 10 + 5} ${
               cell.row * 10
-            } m -2 -2 l 4 4 m -4 0 l 4 -4 `;
+            } m -1 -1 l 2 2 m -2 0 l 2 -2 `;
           }
           if (cell.column == this.columns - 1 && cell.crosses.right) {
             path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 10 0 `;
@@ -490,7 +497,7 @@ class Puzzle {
         this.crosses.setAttributes({
           d: path,
           stroke: "red",
-          "stroke-width": 1.5,
+          "stroke-width": 0.5,
           "stroke-linecap": "flat",
         });
       };
@@ -520,8 +527,8 @@ class Puzzle {
         this.edges.setAttributes({
           d: path,
           stroke: "blue",
-          "stroke-width": 2.5,
-          "stroke-linecap": "flat",
+          "stroke-width": 2,
+          "stroke-linecap": "round",
         });
       };
       this.node.appendChild(this.edges);

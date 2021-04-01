@@ -1,25 +1,8 @@
-class HitorilinkCell extends Cell {
-  constructor(row, column) {
-    super(row, column);
-  }
-
-  // Update cell's HTML form
-  update() {
-    this.node.innerHTML = "";
-    this.node.className = `hitori hitorilink cell row${this.row} col${this.column}`;
-    this.shaded && this.node.classList.add("shaded");
-    this.unshaded && this.node.classList.add("unshaded");
-
-    if (~this.value) {
-      this.node.innerText = String(this.value);
-    }
-  }
-}
-
 class Hitorilink extends Puzzle {
   constructor(parent) {
     super(parent);
-    this.cellType = HitorilinkCell;
+    this.name = "Hitorilink";
+    this.cellType = Cell;
     this.initialize();
   }
 

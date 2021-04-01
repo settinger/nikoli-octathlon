@@ -11,6 +11,7 @@ class Heyawake extends Puzzle {
     super(parent);
     this.name = "Heyawake";
     this.cellType = Cell;
+    this.useWalls = true;
     this.initialize();
   }
 

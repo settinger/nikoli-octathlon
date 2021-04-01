@@ -1,8 +1,15 @@
+class NurikuroCell extends Cell {
+  constructor(row, column) {
+    super(row, column);
+    this.nodeText.setAttribute("font-size", this.height * 0.6);
+  }
+}
+
 class Nurikuro extends Puzzle {
   constructor(parent) {
     super(parent);
     this.name = "Nurikuro";
-    this.cellType = Cell;
+    this.cellType = NurikuroCell;
     this.initialize();
   }
 

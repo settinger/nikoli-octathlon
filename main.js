@@ -95,11 +95,6 @@ $container.appendChild(heyawakeDiv);
 game.heyawake.populate(heyawakeGivens);
 game.heyawake.update();
 
-/*
-
-
-// Nuri-koro grid in row 2 column 4
-// Nurikabe grid in row 1 column 4
 const nurikuroDiv = document.createElement("div");
 nurikuroDiv.style.gridColumn = 4;
 nurikuroDiv.style.gridRow = 2;
@@ -113,7 +108,6 @@ $container.appendChild(nurikuroDiv);
 game.nurikuro.populate(nurikabeGivens);
 game.nurikuro.update();
 
-
 const shikakuDiv = document.createElement("div");
 shikakuDiv.style.gridColumn = 2;
 shikakuDiv.style.gridRow = 2;
@@ -126,20 +120,6 @@ shikakuDiv.appendChild(game.shikaku.node);
 $container.appendChild(shikakuDiv);
 game.shikaku.populate(shikakuGivens);
 game.shikaku.update();
-
-const heyawakeDiv = document.createElement("div");
-heyawakeDiv.style.gridColumn = 3;
-heyawakeDiv.style.gridRow = 2;
-heyawakeDiv.classList.add("puzzle", "heyawake");
-heyawakeDiv.innerHTML = `
-<div class="puzzleName">Heyawake</div>
-<div class="rules">Clues are real only if in top-left corner of a room<br/>
-Same rectangles in Shikaku and Heyawake<br/>
-Same shaded cells in Heyawake and Kurodoko</div>`;
-heyawakeDiv.appendChild(game.heyawake.node);
-$container.appendChild(heyawakeDiv);
-game.heyawake.populate(heyawakeGivens);
-game.heyawake.update();
 
 const countryDiv = document.createElement("div");
 countryDiv.style.gridColumn = 3;
@@ -242,5 +222,3 @@ corralsyuDiv.appendChild(game.corralsyu.node);
 $container.appendChild(corralsyuDiv);
 game.corralsyu.populate(corralGivens, masyuGivens);
 game.corralsyu.update();
-
-*/
