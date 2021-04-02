@@ -113,6 +113,7 @@ class AkariCell extends Cell {
 class Akari extends Puzzle {
   constructor(parent) {
     super(parent);
+    this.name = "Akari";
     this.cellType = AkariCell;
     this.initialize();
 

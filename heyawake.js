@@ -1,11 +1,3 @@
-/*
-class HeyawakeCell extends Cell {
-  constructor(row, column) {
-    super(row, column);
-  }
-}
-*/
-
 class Heyawake extends Puzzle {
   constructor(parent) {
     super(parent);

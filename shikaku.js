@@ -1,17 +1,10 @@
-/*
-class ShikakuCell extends Cell {
-  constructor(row, column) {
-    super(row, column);
-  }
-}
-*/
-
 class Shikaku extends Puzzle {
   constructor(parent) {
     super(parent);
     this.name = "Shikaku";
     this.cellType = Cell;
     this.useWalls = true;
+    this.useBridges = true;
     this.initialize();
   }
 

@@ -312,10 +312,46 @@ class Puzzle {
         });
 
         newCell.node.addEventListener("mouseover", (event) => {
-          document.getElementById("cellstyle").innerText = this.parent
-            .markVertices
-            ? `.row${newCell.row}.col${newCell.column} {border-color: #8888ff;}`
-            : `.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
+          if (!this.parent.markVertices) {
+            document.getElementById(
+              "cellstyle"
+            ).innerText = `.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
+          }
+        });
+        newCell.node.addEventListener("mousemove", (event) => {
+          if (this.parent.markVertices) {
+            let cellDOM = newCell.node.getBoundingClientRect();
+            let [x, y] = [
+              event.clientX - cellDOM.left - cellDOM.width / 2,
+              event.clientY - cellDOM.top - cellDOM.height / 2,
+            ];
+            // Figure out if event is in the top, left, right, or bottom of cell
+            if (x < 0 && -x > Math.abs(y)) {
+              document.getElementById(
+                "cellstyle"
+              ).innerText = `circle.highlight { cx: ${
+                newCell.column * 10
+              }; cy: ${newCell.row * 10 + 5}; r: 2; }`;
+            } else if (x > 0 && x > Math.abs(y)) {
+              document.getElementById(
+                "cellstyle"
+              ).innerText = `circle.highlight { cx: ${
+                newCell.column * 10 + 10
+              }; cy: ${newCell.row * 10 + 5}; r: 2; }`;
+            } else if (y > 0 && y > Math.abs(x)) {
+              document.getElementById(
+                "cellstyle"
+              ).innerText = `circle.highlight { cx: ${
+                newCell.column * 10 + 5
+              }; cy: ${newCell.row * 10 + 10}; r: 2; }`;
+            } else {
+              document.getElementById(
+                "cellstyle"
+              ).innerText = `circle.highlight { cx: ${
+                newCell.column * 10 + 5
+              }; cy: ${newCell.row * 10}; r: 2; }`;
+            }
+          }
         });
 
         this.board[row][col] = newCell;
@@ -380,6 +416,59 @@ class Puzzle {
       this.node.appendChild(this.grid);
     }
 
+    // Bridges nodes (if used)
+    if (this.useWalls) {
+      this.bridges = newSVG("path");
+      this.bridges.classList.add("bridges", this.token);
+      this.bridges.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.bridges.left) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 0 10 `;
+          }
+          if (cell.bridges.top) {
+            path += `M ${cell.column * 10} ${cell.row * 10} l 10 0 `;
+          }
+        });
+        this.bridges.setAttributes({
+          d: path,
+          stroke: "white",
+          "stroke-width": 0.6,
+          "stroke-dashoffset": 1.1,
+          "stroke-dasharray": 1.1,
+        });
+      };
+      this.node.appendChild(this.bridges);
+
+      // This is the former method used--creates a green link between cells
+      /*
+      this.bridges.update = () => {
+        let path = "";
+        this.board.flat().forEach((cell) => {
+          if (cell.bridges.left) {
+            path += `M ${cell.column * 10 + 3} ${cell.row * 10 + 5} l -6 0 `;
+          }
+          if (cell.bridges.top) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 3} l 0 -6 `;
+          }
+          if (cell.column == this.columns - 1 && cell.bridges.right) {
+            path += `M ${cell.column * 10 + 7} ${cell.row * 10 + 5} l 6 0 `;
+          }
+          if (cell.row == this.rows - 1 && cell.bridges.bottom) {
+            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 7} l 0 6 `;
+          }
+        });
+        this.bridges.setAttributes({
+          d: path,
+          stroke: "green",
+          "stroke-width": 1,
+          "stroke-linecap": "round",
+        });
+      };
+      this.node.appendChild(this.bridges);
+      */
+    }
+
     // Wall node (if used)
     if (this.useWalls) {
       this.walls = newSVG("path");
@@ -403,41 +492,11 @@ class Puzzle {
         this.walls.setAttributes({
           d: path,
           stroke: "black",
-          "stroke-width": 2.5,
-          "stroke-linecap": "round",
-        });
-      };
-      this.node.appendChild(this.walls);
-    }
-
-    // Bridges nodes (if used)
-    if (this.useBridges) {
-      this.bridges = newSVG("path");
-      this.bridges.classList.add("bridges", this.token);
-      this.bridges.update = () => {
-        let path = "";
-        this.board.flat().forEach((cell) => {
-          if (cell.bridges.left) {
-            path += `M ${cell.column * 10 + 3} ${cell.row * 10 + 5} l -6 0 `;
-          }
-          if (cell.bridges.top) {
-            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 3} l 0 -6 `;
-          }
-          if (cell.column == this.columns - 1 && cell.bridges.right) {
-            path += `M ${cell.column * 10 + 7} ${cell.row * 10 + 5} l 6 0 `;
-          }
-          if (cell.row == this.rows - 1 && cell.bridges.bottom) {
-            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 7} l 0 6 `;
-          }
-        });
-        this.bridges.setAttributes({
-          d: path,
-          stroke: "green",
           "stroke-width": 1.5,
           "stroke-linecap": "round",
         });
       };
-      this.node.appendChild(this.bridges);
+      this.node.appendChild(this.walls);
     }
 
     // Loops node (if used)
@@ -463,7 +522,7 @@ class Puzzle {
         this.loops.setAttributes({
           d: path,
           stroke: "blue",
-          "stroke-width": 2.5,
+          "stroke-width": 1.5,
           "stroke-linecap": "round",
         });
       };
@@ -471,7 +530,7 @@ class Puzzle {
     }
 
     // Crosses node (if used) {
-    if (this.useCrosses) {
+    if (this.useLoops || this.useEdges) {
       this.crosses = newSVG("path");
       this.crosses.classList.add("crosses", this.token);
       this.crosses.update = () => {
@@ -527,12 +586,18 @@ class Puzzle {
         this.edges.setAttributes({
           d: path,
           stroke: "blue",
-          "stroke-width": 2,
+          "stroke-width": 1.5,
           "stroke-linecap": "round",
         });
       };
       this.node.appendChild(this.edges);
     }
+
+    // Vertex highlighting for mouseover events
+    this.highlight = newSVG("circle");
+    this.highlight.classList.add("highlight", this.token);
+    this.highlight.setAttributes({ r: 2, fill: "black", "fill-opacity": 0.4 });
+    this.node.appendChild(this.highlight);
   }
 
   // Initialize the cell values from a given array
@@ -559,13 +624,13 @@ class Puzzle {
     if (this.useWalls) {
       this.walls.update();
     }
-    if (this.useBridges) {
+    if (this.useWalls) {
       this.bridges.update();
     }
     if (this.useLoops) {
       this.loops.update();
     }
-    if (this.useCrosses) {
+    if (this.useLoops || this.useEdges) {
       this.crosses.update();
     }
     if (this.useEdges) {

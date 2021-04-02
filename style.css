@@ -70,7 +70,7 @@ button {
   fill: white;
 }
 
-circle {
+.cell circle {
   fill: none;
   stroke: none;
   r: 0;
@@ -112,6 +112,7 @@ text {
 
 .grid,
 .walls,
+.bridges,
 .loops,
 .edges,
 .crosses,
@@ -120,104 +121,9 @@ text {
   pointer-events: none;
 }
 
-div.toploop {
-  background: rgba(0, 0, 255, 0.5);
-  width: 16%;
-  height: 50%;
-  left: 42%;
-  top: 0%;
-}
-
-div.leftloop {
-  background: rgba(0, 0, 255, 0.5);
-  width: 50%;
-  height: 16%;
-  left: 0%;
-  top: 42%;
-}
-
-div.rightloop {
-  background: rgba(0, 0, 255, 0.5);
-  width: 50%;
-  height: 16%;
-  left: 50%;
-  top: 42%;
-}
-
-div.bottomloop {
-  background: rgba(0, 0, 255, 0.5);
-  width: 16%;
-  height: 50%;
-  left: 42%;
-  top: 50%;
-}
-
-div.topedge {
-  background: blue;
-  width: 100%;
-  height: 8%;
-  left: 0%;
-  top: -4%;
-}
-
-div.leftedge {
-  background: blue;
-  width: 8%;
-  height: 100%;
-  left: -4%;
-  top: 0%;
-}
-
-div.rightedge {
-  background: blue;
-  width: 8%;
-  height: 100%;
-  left: 96%;
-  top: 0%;
-}
-
-div.bottomedge {
-  background: blue;
-  width: 100%;
-  height: 8%;
-  left: 0%;
-  top: 96%;
-}
-
-div.topcross {
-  background: red;
-  width: 16%;
-  height: 16%;
-  left: 42%;
-  top: -8%;
-  transform: rotate(45deg);
-}
-
-div.leftcross {
-  background: red;
-  width: 16%;
-  height: 16%;
-  left: -8%;
-  top: 42%;
-  transform: rotate(45deg);
-}
-
-div.rightcross {
-  background: red;
-  width: 16%;
-  height: 16%;
-  left: 92%;
-  top: 42%;
-  transform: rotate(45deg);
-}
-
-div.bottomcross {
-  background: red;
-  width: 16%;
-  height: 16%;
-  left: 42%;
-  top: 92%;
-  transform: rotate(45deg);
+.highlight {
+  r: 0;
+  pointer-events: none;
 }
 
 /* Akari-specific styling */
@@ -258,7 +164,7 @@ div.bottomcross {
   fill: yellow;
 }
 
-.corral text {
+.corral .clue.shaded text {
   fill: black;
 }
 
@@ -323,6 +229,16 @@ div.bottomcross {
   r: 0.8;
 }
 
+.kurodoko :not(.shaded) rect,
+.nurikabe :not(.shaded) rect {
+  fill: white;
+}
+
+.kurodoko .shaded rect,
+.nurikabe .shaded rect {
+  fill: black;
+}
+
 /* Masyu specific styling */
 .masyu .pearl circle {
   stroke: black;
@@ -347,15 +263,6 @@ div.bottomcross {
   fill: white;
 }
 
-.shikaku div.true {
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  border: 2px solid black;
-  border-radius: 50%;
-}
-
 .shikaku .false {
   color: white;
   text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
@@ -375,11 +282,4 @@ div.bottomcross {
 
 .slitherlink td {
   border: none;
-}
-
-.slitherlink div.corner {
-  background: black;
-  width: 10%;
-  height: 10%;
-  border-radius: 50%;
 }
