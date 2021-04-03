@@ -20,23 +20,22 @@ class Cell {
     // this.node.addEventListener("click", (e) => {
     //   console.log(`${this.row}x${this.column}`);
     // });
-    this.nodeRect = newSVG("rect");
-    this.node.appendChild(this.nodeRect);
-    this.nodeRect.setAttributes({
+    this.nodeRect = newSVG("rect", {
       x: this.x,
       y: this.y,
       width: this.width,
       height: this.height,
     });
-    this.nodeCircle = newSVG("circle");
-    this.nodeCircle.setAttributes({
+    this.node.appendChild(this.nodeRect);
+
+    this.nodeCircle = newSVG("circle", {
       cx: this.x + this.width / 2,
       cy: this.y + this.height / 2,
       fill: "none",
     });
     this.node.appendChild(this.nodeCircle);
-    this.nodeText = newSVG("text");
-    this.nodeText.setAttributes({
+
+    this.nodeText = newSVG("text", {
       x: this.x + this.width / 2,
       y: this.y + this.height / 2,
       "text-anchor": "middle",

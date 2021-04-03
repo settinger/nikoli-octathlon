@@ -12,9 +12,10 @@ body {
   display: grid;
   grid-gap: 5%;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   text-align: center;
   padding: 4%;
+  padding-bottom: 40px;
   min-width: 800px;
   min-height: 200px;
 }
@@ -30,6 +31,10 @@ body {
 
 #indicator {
   padding: 2em;
+}
+
+#arrows {
+  pointer-events: none;
 }
 
 button {
@@ -195,23 +200,6 @@ text {
   fill: white;
 }
 
-/* Hitori specific styling */
-
-.hitori td.shaded {
-  background-color: black;
-  color: white;
-}
-
-.hitori td.unshaded {
-  color: black;
-  background-color: white;
-}
-
-.hitori td:not(.shaded):not(.unshaded) {
-  color: black;
-  background-color: #dddddd;
-}
-
 /* Kurodoko and Nurikabe specific styling */
 
 .kurodoko .clue circle,
@@ -254,6 +242,10 @@ text {
   fill: white;
 }
 
+.masyu .pearl.white text {
+  fill: black;
+}
+
 .masyu .false.pearl circle {
   filter: opacity(50%);
 }
@@ -261,12 +253,6 @@ text {
 /* Shikaku specific styling */
 .shikaku rect {
   fill: white;
-}
-
-.shikaku .false {
-  color: white;
-  text-shadow: -0.5px 0.5px 0 black, 0.5px 0.5px 0 black, 0.5px -0.5px 0 black,
-    -0.5px -0.5px 0 black;
 }
 
 /* Slitherlink specific styling */
@@ -278,8 +264,4 @@ text {
 
 .slitherlink .cell rect {
   fill: white;
-}
-
-.slitherlink td {
-  border: none;
 }

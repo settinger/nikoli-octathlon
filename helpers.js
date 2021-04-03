@@ -14,13 +14,14 @@ const make2dArray = (rows, columns, value = 0) => {
 };
 
 // Shortcut to create an SVG element and give it multiple attributes at once
-const newSVG = (tag) => {
+const newSVG = (tag, props = {}) => {
   const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
   node.setAttributes = (attributes) => {
     for (let [key, value] of Object.entries(attributes)) {
       node.setAttribute(key, value);
     }
   };
+  node.setAttributes(props);
   return node;
 };
 

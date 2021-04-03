@@ -68,13 +68,7 @@ akariDiv.style.gridColumn = 1;
 akariDiv.style.gridRow = 2;
 akariDiv.classList.add("puzzle", "akari");
 akariDiv.innerHTML = `
-<div class="puzzleName">Akari</div>
-<div class="rules">Clue in wall: real clue<br/>
-Clue not in wall: ignore number<br/>
-Walls same as Hitori shaded cells<br/>
-Akari light bulb <-> Real Shikaku clue
-</div>
-`;
+<div class="puzzleName">Akari</div>`;
 akariDiv.appendChild(game.akari.node);
 $container.appendChild(akariDiv);
 game.akari.populate(akariGivens);
@@ -114,8 +108,7 @@ shikakuDiv.style.gridRow = 2;
 shikakuDiv.classList.add("puzzle", "shikaku");
 shikakuDiv.innerHTML = `
 <div class="puzzleName">Shikaku</div>
-<div class="rules">Akari light bulb <-> Real Shikaku clue<br/>
-Same rectangles in Shikaku and Heyawake</div>`;
+<div class="rules">Same rectangles in Shikaku and Heyawake</div>`;
 shikakuDiv.appendChild(game.shikaku.node);
 $container.appendChild(shikakuDiv);
 game.shikaku.populate(shikakuGivens);
@@ -153,9 +146,7 @@ hitoriDiv.style.gridColumn = 1;
 hitoriDiv.style.gridRow = 4;
 hitoriDiv.classList.add("puzzle", "hitori");
 hitoriDiv.innerHTML = `
-<div class="puzzleName">Hitori</div>
-<div class="rules">Shaded cells same as Akari walls<br/>
-Add numbers mod 10 to Slitherlink clues</div>`;
+<div class="puzzleName">Hitori</div>`;
 hitoriDiv.appendChild(game.hitori.node);
 $container.appendChild(hitoriDiv);
 game.hitori.update();
@@ -166,9 +157,7 @@ slitherlinkDiv.style.gridRow = 4;
 slitherlinkDiv.classList.add("puzzle", "slitherlink");
 slitherlinkDiv.innerHTML = `
 <div class="puzzleName">Slitherlink</div>
-<div class="rules">Clue in every cell<br/>
-Same loop as Corral<br/>
-Add clues mod 10 to Hitori numbers</div>`;
+<div class="rules">Clue in every cell</div>`;
 slitherlinkDiv.appendChild(game.slitherlink.node);
 $container.appendChild(slitherlinkDiv);
 game.slitherlink.update();
@@ -178,9 +167,7 @@ hitorilinkDiv.style.gridColumn = 1;
 hitorilinkDiv.style.gridRow = 3;
 hitorilinkDiv.classList.add("puzzle", "hitori", "hitorilink");
 hitorilinkDiv.innerHTML = `
-<div class="puzzleName">Hitori + Slitherlink</div>
-<div class="rules">Slitherlink clue + Hitori clue, mod 10, equals given clue<br/>
-Same shaded cells as Akari</div>`;
+<div class="puzzleName">Hitori + Slitherlink</div>`;
 hitorilinkDiv.appendChild(game.hitorilink.node);
 $container.appendChild(hitorilinkDiv);
 game.hitorilink.populate(hitoriGivens);
@@ -192,8 +179,7 @@ corralDiv.style.gridRow = 4;
 corralDiv.classList.add("puzzle", "corral");
 corralDiv.innerHTML = `
 <div class="puzzleName">Corral</div>
-<div class="rules">Same loop as Slitherlink<br/>
-If correct clue in Masyu, put number in Corral cell</div>`;
+<div class="rules">If correct clue in Masyu, put number in Corral cell</div>`;
 corralDiv.appendChild(game.corral.node);
 $container.appendChild(corralDiv);
 game.corral.update();

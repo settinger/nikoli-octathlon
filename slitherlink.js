@@ -29,8 +29,7 @@ class Slitherlink extends Puzzle {
     this.grid.update = () => {
       for (let row = 0; row <= this.rows; row++) {
         for (let col = 0; col <= this.columns; col++) {
-          const dot = newSVG("circle");
-          dot.setAttributes({
+          const dot = newSVG("circle", {
             cx: col * 10,
             cy: row * 10,
             fill: "black",

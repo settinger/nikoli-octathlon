@@ -128,7 +128,9 @@ class Akari extends Puzzle {
       this.toggleLights();
       this.update();
     });
-    this.node.parentNode.appendChild(this.toggle);
+    const toggleDiv = document.createElement("div");
+    toggleDiv.appendChild(this.toggle);
+    this.node.parentNode.appendChild(toggleDiv);
   }
 
   // Return a list of all cells with lamps
