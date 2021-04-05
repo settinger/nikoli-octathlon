@@ -40,11 +40,7 @@ kurodokoDiv.style.gridColumn = 3;
 kurodokoDiv.style.gridRow = 1;
 kurodokoDiv.classList.add("puzzle", "kurodoko");
 kurodokoDiv.innerHTML = `
-<div class="puzzleName">Kurodoko</div>
-<div class="rules">Same shaded cells as Heyawake<br/>
-Sum clues with Nurikabe clues
-</div>
-`;
+<div class="puzzleName">Kurodoko</div>`;
 kurodokoDiv.appendChild(game.kurodoko.node);
 $container.appendChild(kurodokoDiv);
 game.kurodoko.populate(nurikabeGivens);
@@ -55,9 +51,7 @@ nurikabeDiv.style.gridColumn = 4;
 nurikabeDiv.style.gridRow = 1;
 nurikabeDiv.classList.add("puzzle", "nurikabe");
 nurikabeDiv.innerHTML = `
-<div class="puzzleName">Nurikabe</div>
-<div class="rules">Sum clues with Kurodoko clues<br/>
-Nurikabe shaded cells are Fillomino liars</div>`;
+<div class="puzzleName">Nurikabe</div>`;
 nurikabeDiv.appendChild(game.nurikabe.node);
 $container.appendChild(nurikabeDiv);
 game.nurikabe.populate(nurikabeGivens);
@@ -81,9 +75,7 @@ heyawakeDiv.style.gridRow = 2;
 heyawakeDiv.classList.add("puzzle", "heyawake");
 heyawakeDiv.innerHTML = `
 <div class="puzzleName">Heyawake</div>
-<div class="rules">Clues are real only if in top-left corner of a room<br/>
-Same rectangles in Shikaku and Heyawake<br/>
-Same shaded cells in Heyawake and Kurodoko</div>`;
+<div class="rules">Clues are real only if in<br/>top-left corner of a room</div>`;
 heyawakeDiv.appendChild(game.heyawake.node);
 $container.appendChild(heyawakeDiv);
 game.heyawake.populate(heyawakeGivens);
@@ -94,9 +86,7 @@ nurikuroDiv.style.gridColumn = 4;
 nurikuroDiv.style.gridRow = 2;
 nurikuroDiv.classList.add("puzzle", "nurikabe");
 nurikuroDiv.innerHTML = `
-<div class="puzzleName">Nurikabe+Kurodoko</div>
-<div class="rules">Clues are sum of Nurikabe and Kurodoko clues<br/>
-Nurikabe shaded cells are Fillomino liars</div>`;
+<div class="puzzleName">Nurikabe+Kurodoko</div>`;
 nurikuroDiv.appendChild(game.nurikuro.node);
 $container.appendChild(nurikuroDiv);
 game.nurikuro.populate(nurikabeGivens);
@@ -107,8 +97,7 @@ shikakuDiv.style.gridColumn = 2;
 shikakuDiv.style.gridRow = 2;
 shikakuDiv.classList.add("puzzle", "shikaku");
 shikakuDiv.innerHTML = `
-<div class="puzzleName">Shikaku</div>
-<div class="rules">Same rectangles in Shikaku and Heyawake</div>`;
+<div class="puzzleName">Shikaku</div>`;
 shikakuDiv.appendChild(game.shikaku.node);
 $container.appendChild(shikakuDiv);
 game.shikaku.populate(shikakuGivens);
@@ -120,9 +109,7 @@ countryDiv.style.gridRow = 3;
 countryDiv.classList.add("puzzle", "countryroad");
 countryDiv.innerHTML = `
 <div class="puzzleName">Country Road</div>
-<div class="rules">At most one clue per room<br/>
-Same rooms as Fillomino<br/>
-Same loop as Masyu</div>`;
+<div class="rules">At most one clue per room</div>`;
 countryDiv.appendChild(game.countryRoad.node);
 $container.appendChild(countryDiv);
 game.countryRoad.populate(countryRoadGivens);
@@ -133,9 +120,7 @@ fillominoDiv.style.gridColumn = 4;
 fillominoDiv.style.gridRow = 3;
 fillominoDiv.classList.add("puzzle", "fillomino");
 fillominoDiv.innerHTML = `
-<div class="puzzleName">Fillomino</div>
-<div class="rules">Same rooms as Country Road<br/>
-Nurikabe shaded cells are liars</div>`;
+<div class="puzzleName">Fillomino</div>`;
 fillominoDiv.appendChild(game.fillomino.node);
 $container.appendChild(fillominoDiv);
 game.fillomino.populate(fillominoGivens);
@@ -178,8 +163,7 @@ corralDiv.style.gridColumn = 3;
 corralDiv.style.gridRow = 4;
 corralDiv.classList.add("puzzle", "corral");
 corralDiv.innerHTML = `
-<div class="puzzleName">Corral</div>
-<div class="rules">If correct clue in Masyu, put number in Corral cell</div>`;
+<div class="puzzleName">Corral</div>`;
 corralDiv.appendChild(game.corral.node);
 $container.appendChild(corralDiv);
 game.corral.update();
@@ -189,9 +173,7 @@ masyuDiv.style.gridColumn = 4;
 masyuDiv.style.gridRow = 4;
 masyuDiv.classList.add("puzzle", "masyu");
 masyuDiv.innerHTML = `
-<div class="puzzleName">Masyu</div>
-<div class="rules">Same loop as Country Road<br/>
-If correct clue in Masyu, put number in Corral cell</div>`;
+<div class="puzzleName">Masyu</div>`;
 masyuDiv.appendChild(game.masyu.node);
 $container.appendChild(masyuDiv);
 game.masyu.populate(masyuGivens);
@@ -202,8 +184,7 @@ corralsyuDiv.style.gridColumn = 2;
 corralsyuDiv.style.gridRow = 3;
 corralsyuDiv.classList.add("puzzle", "corralsyu", "corral", "masyu");
 corralsyuDiv.innerHTML = `
-<div class="puzzleName">Corral + Masyu</div>
-<div class="rules">If correct clue in Masyu, copy corresponding number from full Corral grid to emtpy one</div>`;
+<div class="puzzleName">Corral + Masyu</div>`;
 corralsyuDiv.appendChild(game.corralsyu.node);
 $container.appendChild(corralsyuDiv);
 game.corralsyu.populate(corralGivens, masyuGivens);

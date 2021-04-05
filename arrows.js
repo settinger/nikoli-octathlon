@@ -123,24 +123,25 @@ const textNode = (anchor, ...texts) => {
   return text;
 };
 
-const corner = (board, corner) => {
-  const box = board.node.getBoundingClientRect();
+const corner = (board, corner, actualCorner = false) => {
+  const box = board.getBoundingClientRect();
+  const adjust = actualCorner ? 0 : 0.1 * box.width;
   if (corner == "tl") {
     // Top left
-    return [box.x + 0.1 * box.width + window.scrollX, box.y + window.scrollY];
+    return [box.x + adjust + window.scrollX, box.y + window.scrollY];
   } else if (corner == "tr") {
     // Top right
-    return [box.x + 0.9 * box.width + window.scrollX, box.y + window.scrollY];
+    return [
+      box.x + box.width - adjust + window.scrollX,
+      box.y + window.scrollY,
+    ];
   } else if (corner == "bl") {
     // Bottom left
-    return [
-      box.x + 0.1 * box.width + window.scrollX,
-      box.bottom + window.scrollY,
-    ];
+    return [box.x + adjust + window.scrollX, box.bottom + window.scrollY];
   } else {
     // Bottom right
     return [
-      box.x + 0.9 * box.width + window.scrollX,
+      box.x + box.width - adjust + window.scrollX,
       box.bottom + window.scrollY,
     ];
   }
@@ -159,25 +160,47 @@ const arrowUpdate = () => {
   const slitherlinkDOM = game.slitherlink.node.getBoundingClientRect();
 
   // Arrow and text for Akari alone
-  let akaTL = corner(game.akari, "tl");
+  let akaTL = corner(game.akari.node, "tl");
   let akaStart = [akaTL[0], akaTL[1] - 0.33 * widthUnit];
   arrowsGroup.appendChild(plainArrow(akaStart, akaTL, true));
   arrowsGroup.appendChild(
-    textNode(akaStart, "Shaded cell: real clue", "Unshaded cell: ignore number")
+    textNode(
+      [akaStart[0] + 20, akaStart[1]],
+      "Shaded cell: real clue",
+      "Unshaded cell: ignore number"
+    )
   );
 
   // Arrow and text between Akari and Shikaku
   const akashi = bezierArrow(
-    corner(game.akari, "tr"),
-    corner(game.shikaku, "tl")
+    corner(game.akari.node, "tr"),
+    corner(game.shikaku.node, "tl")
   );
   arrowsGroup.appendChild(akashi);
   arrowsGroup.appendChild(textNode(akashi.midpoint, "Lightbulb ⇔ Real clue"));
 
+  // Arrow and text between Shikaku and Heyawake
+  const shihey = bezierArrow(
+    corner(game.shikaku.node, "tr"),
+    corner(game.heyawake.node, "tl")
+  );
+  arrowsGroup.appendChild(shihey);
+  arrowsGroup.appendChild(textNode(shihey.midpoint, "Same rectangles"));
+
+  // Arrow and text between Kurodoko and Heyawake
+  const kurhey = plainArrow(
+    corner(game.kurodoko.node, "br"),
+    corner(game.heyawake.node, "tr")
+  );
+  arrowsGroup.appendChild(kurhey);
+  arrowsGroup.appendChild(
+    textNode([kurhey.midpoint[0] - 55, kurhey.midpoint[1]], "Same shaded cells")
+  );
+
   // Arrow and text between Akari and Hitorilink
   const akahil = bezierArrow(
-    corner(game.hitorilink, "tl"),
-    corner(game.akari, "bl"),
+    corner(game.hitorilink.node, "tl"),
+    corner(game.akari.node, "bl"),
     false,
     0.1
   );
@@ -187,9 +210,9 @@ const arrowUpdate = () => {
   );
 
   // Arrows and text between Hitori, Slitherlink, and Hitorilink
-  let hitTR = corner(game.hitori, "tr");
+  let hitTR = corner(game.hitori.node, "tr");
   let hitEnd = [hitTR[0], hitTR[1] - 0.2 * widthUnit];
-  let sliTL = corner(game.slitherlink, "tl");
+  let sliTL = corner(game.slitherlink.node, "tl");
   let sliEnd = [hitEnd[0] + 0.2 * widthUnit, hitEnd[1]];
   arrowsGroup.appendChild(plainArrow(hitTR, hitEnd, true));
   arrowsGroup.appendChild(plainArrow(sliTL, sliEnd, true));
@@ -198,19 +221,101 @@ const arrowUpdate = () => {
   );
   let hilStart = [hitEnd[0], hitEnd[1] - 32];
   arrowsGroup.appendChild(
-    plainArrow(hilStart, corner(game.hitorilink, "br"), true)
+    plainArrow(hilStart, corner(game.hitorilink.node, "br"), true)
+  );
+
+  // Arrows and text between Kurodoko, Nurikabe, Nurikuro
+  let kurBR = corner(game.kurodoko.node, "br");
+  kurBR = [kurBR[0] + 0.1 * widthUnit, kurBR[1] - 0.1 * widthUnit];
+  let nurBL = corner(game.nurikabe.node, "bl");
+  let nurEnd = [nurBL[0], nurBL[1] + 0.2 * widthUnit];
+  let kurEnd = [nurEnd[0] - 0.1 * widthUnit, nurEnd[1]];
+  let nkStart = [nurEnd[0], nurEnd[1] + 24];
+  arrowsGroup.appendChild(plainArrow(kurBR, kurEnd, true));
+  arrowsGroup.appendChild(plainArrow(nurBL, nurEnd, true));
+  arrowsGroup.appendChild(textNode(nkStart, "Add numbers"));
+  arrowsGroup.appendChild(
+    plainArrow(nkStart, corner(game.nurikuro.node, "tl"), true)
   );
 
   // Arrow and text between Slitherlink and Corral
   const slicor = bezierArrow(
-    corner(game.slitherlink, "br"),
-    corner(game.corral, "bl"),
+    corner(game.slitherlink.node, "br"),
+    corner(game.corral.node, "bl"),
     false,
     -0.5
   );
   arrowsGroup.appendChild(slicor);
   arrowsGroup.appendChild(
     textNode([slicor.midpoint[0], slicor.midpoint[1] + 12], "Same loop")
+  );
+
+  // Nurikabe and Fillomino arrows
+  const nurBR = corner(game.nurikabe.node, "br");
+  const filTR = corner(game.fillomino.node, "tr");
+  const nurfil = [filTR[0] - 70, filTR[1] - 0.3 * widthUnit];
+  arrowsGroup.appendChild(bezierArrow(nurBR, filTR, false, 0.2));
+  arrowsGroup.appendChild(textNode(nurfil, "Shaded Nurikabe ⇔ Fillomino liar"));
+
+  // Fillomino and Country Road arrows
+  const coufil = bezierArrow(
+    corner(game.countryRoad.node, "tr"),
+    corner(game.fillomino.node, "tl")
+  );
+  arrowsGroup.appendChild(coufil);
+  arrowsGroup.appendChild(textNode(coufil.midpoint, "Same rooms"));
+
+  // Masyu and Country Road
+  const coumas = plainArrow(
+    corner(game.countryRoad.node, "br"),
+    corner(game.masyu.node, "tl")
+  );
+  arrowsGroup.appendChild(coumas);
+  arrowsGroup.appendChild(
+    textNode([coumas.midpoint[0] + 30, coumas.midpoint[1]], "Same loop")
+  );
+
+  // The more elaborate Masyu+Corral instructions
+  const cmBR = corner(game.corralsyu.node, "br");
+  const masTL = corner(game.masyu.node, "tl");
+  const cmMidpt = [
+    (cmBR[0] + masTL[0]) / 2 - 45,
+    (cmBR[1] + masTL[1]) / 2 + 12,
+  ];
+  const cmText = textNode(
+    cmMidpt,
+    "If correct clue in Masyu, copy corresponding",
+    "number from full Corral grid to empty one"
+  );
+
+  arrowsGroup.appendChild(cmText);
+
+  const cmDOM = cmText.getBoundingClientRect();
+  const cmRect = newSVG("rect", {
+    x: cmDOM.x + window.scrollX - 6,
+    y: cmDOM.y + window.scrollY - 6,
+    width: cmDOM.width + 12,
+    height: cmDOM.height + 12,
+    stroke: "black",
+    fill: "white",
+  });
+  arrowsGroup.insertBefore(cmRect, cmText);
+  arrowsGroup.appendChild(
+    plainArrow(
+      corner(cmRect, "br", true),
+      corner(game.masyu.node, "tl", true),
+      true
+    )
+  );
+  arrowsGroup.appendChild(
+    plainArrow(corner(cmRect, "br"), corner(game.corral.node, "tr"), true)
+  );
+  arrowsGroup.appendChild(
+    plainArrow(
+      corner(cmRect, "tl", true),
+      corner(game.corralsyu.node, "br"),
+      true
+    )
   );
 };
 
