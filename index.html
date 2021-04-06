@@ -20,6 +20,114 @@
       </div>
     </div>
     <div id="container"></div>
+    <div id="rules">
+      <h2>
+        The rules as found on
+        <a href="https://mellowmelon.wordpress.com/2010/02/21/puzzle-200/"
+          >the original puzzle</a
+        >
+      </h2>
+      <p id="akari-rules">
+        <b>Akari</b> (depends on Hitori, dependee of Shikaku)<br />
+        See <a href="https://mellowmelon.wordpress.com/akari/">here</a> for the
+        rules to Akari.<br />
+        The walls are not given to you in this puzzle. The black cells in the
+        solution to the Hitori puzzle are exactly the locations of the walls.
+        Any wall with a number represents a typical numeric clue in Akari. Any
+        number without a wall is a fake clue and should be ignored. Light bulbs
+        are allowed to be placed on top of fake numbers.
+      </p>
+      <p id="shikaku-rules">
+        <b>Shikaku</b> (depends on Akari, dependee of Heyawake)<br />
+        See <a href="https://www.janko.at/Raetsel/Sikaku/index.htm">here</a> for
+        the rules to Shikaku.<br />
+        A lot of extra numbers are given in this puzzle. Overlay the light bulbs
+        in the Akari solution on this puzzle. Only those numbers which have a
+        lightbulb on top of them are true clues in this puzzle. All other
+        numbers should be ignored; they may or may not denote the correct size
+        of the rectangle that contains them.
+      </p>
+      <p id="heyawake-rules">
+        <b>Heyawake</b> (depends on Shikaku, dependee of Nurikabe)<br />
+        See <a href="https://www.janko.at/Raetsel/Heyawake/">here</a> and
+        <a href="http://en.wikipedia.org/wiki/Heyawake">here</a> for the rules
+        to Heyawake.<br />
+        The rooms are not given to you in this puzzle. The rectangles in the
+        solution to the Shikaku are where the rooms are. Only those numbers
+        appearing in the top left cell of a room should be used as clues. All
+        other numbers should be ignored.
+      </p>
+      <p id="nurikuro-rules">
+        <b>Nurikabe, featuring Kurodoko</b> (depends on Heyawake, dependee of
+        Fillomino)<br />
+        See <a href="https://mellowmelon.wordpress.com/nurikabe/">here</a> for
+        the rules to Nurikabe. See
+        <a href="https://www.janko.at/Raetsel/Kuromasu/index.htm">here</a> and
+        <a href="http://en.wikipedia.org/wiki/Kuromasu">here</a> for the rules
+        to Kurodoko (which is sometimes called Kuromasu).<br />
+        A Nurikabe and a Kurodoko puzzle have been superimposed on each other.
+        The solution to the Heyawake puzzle and the Kurodoko puzzle are
+        identical. Each number in this puzzle is the location of a clue in both
+        the Nurikabe and Kurodoko, and the number is the sum of the clues in
+        each of the puzzles (i.e. if there is a Nurikabe 1 and a Kurodoko 6 in
+        the same space, a 7 will appear in this puzzle).
+      </p>
+      <p id="fillomino-rules">
+        <b>Fillomino</b> (depends on Nurikabe, dependee of Country Road)<br />
+        See <a href="https://mellowmelon.wordpress.com/fillomino/">here</a> for
+        the rules to Fillomino.<br />
+        A lot of extra numbers are given in this puzzle. Overlay the Nurikabe
+        solution on this puzzle. All numbers covered by a black cell in the
+        Nurikabe solution are liars and <i>are not the correct number</i>. All
+        numbers covered by white cells are truth-tellers.
+      </p>
+      <p id="country-road-rules">
+        <b>Country Road</b> (depends on Fillomino, dependee of Corral)<br />
+        See
+        <a href="https://mellowmelon.wordpress.com/country-road/">here</a> for
+        the rules to Country Road.<br />
+        The rooms are not given to you in this puzzle. Overlay the Fillomino
+        solution; it gives the shape of all of the rooms. Each room will contain
+        no number or one number, which functions as a standard Country Road clue
+        for that room. The number can appear in anywhere in the room.
+        <i>
+          Note: nikoli’s rules require every room to be visited exactly once.
+          This rule does <b>not</b> apply to this puzzle.
+        </i>
+      </p>
+      <p id="corralsyu-rules">
+        <b>Corral, featuring Masyu</b> (depends on Country Road, dependee of
+        Hitori)<br />
+        See <a href="https://mellowmelon.wordpress.com/corral/">here</a> for the
+        rules to Corral. See
+        <a href="https://mellowmelon.wordpress.com/masyu/">here</a> for the
+        rules to Masyu.<br />
+        The grid is filled with Corral clues in black or white circles, but not
+        all of the Corral clues are correct. Overlay the solution to the Country
+        Road puzzle on this one. Cross off all of the circled numbers for which
+        that colored circle would not be a valid Masyu clue in the Country Road
+        solution. All of the numbers that are left are the clues to the Corral
+        puzzle. (the numbers that are crossed off may or may not be correct)
+      </p>
+      <p id="hitorilink-rules">
+        <b>Hitori, featuring Slitherlink</b> (depends on Corral, dependee of
+        Akari)<br />
+        See
+        <a href="https://www.janko.at/Raetsel/Hitori/index.htm">here</a> and
+        <a href="http://en.wikipedia.org/wiki/Hitori">here</a> for the rules to
+        Hitori. See
+        <a href="https://mellowmelon.wordpress.com/slitherlink/">here</a> for
+        the rules to Slitherlink.<br />
+        A Hitori and a Slitherlink puzzle have been superimposed on each other.
+        The solution to the Corral puzzle and the Slitherlink puzzle are
+        identical. The Slitherlink puzzle gives a number in every square, just
+        as the Hitori does. All of the Hitori clues are numbers from 1 to 10.
+        Each number that appears in this puzzle is the <i>units digit</i> of the
+        sum of the Hitori and Slitherlink clues. For instance, in a space where
+        the Slitherlink has a 3 and the Hitori has an 8, a 1 would be written in
+        this puzzle.
+      </p>
+    </div>
     <div id="footer" style="padding-bottom: 20px"></div>
     <script type="text/javascript" src="helpers.js"></script>
     <script type="text/javascript" src="givens.js"></script>

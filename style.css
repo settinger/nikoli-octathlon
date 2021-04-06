@@ -29,6 +29,10 @@ body {
   justify-content: center;
 }
 
+p {
+  padding: 10px 0;
+}
+
 #indicator {
   padding: 2em;
 }

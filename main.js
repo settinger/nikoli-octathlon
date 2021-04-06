@@ -40,7 +40,7 @@ kurodokoDiv.style.gridColumn = 3;
 kurodokoDiv.style.gridRow = 1;
 kurodokoDiv.classList.add("puzzle", "kurodoko");
 kurodokoDiv.innerHTML = `
-<div class="puzzleName">Kurodoko</div>`;
+<div class="puzzleName"><a href="#nurikuro-rules">Kurodoko</a></div>`;
 kurodokoDiv.appendChild(game.kurodoko.node);
 $container.appendChild(kurodokoDiv);
 game.kurodoko.populate(nurikabeGivens);
@@ -51,7 +51,7 @@ nurikabeDiv.style.gridColumn = 4;
 nurikabeDiv.style.gridRow = 1;
 nurikabeDiv.classList.add("puzzle", "nurikabe");
 nurikabeDiv.innerHTML = `
-<div class="puzzleName">Nurikabe</div>`;
+<div class="puzzleName"><a href="#nurikuro-rules">Nurikabe</a></div>`;
 nurikabeDiv.appendChild(game.nurikabe.node);
 $container.appendChild(nurikabeDiv);
 game.nurikabe.populate(nurikabeGivens);
@@ -62,7 +62,7 @@ akariDiv.style.gridColumn = 1;
 akariDiv.style.gridRow = 2;
 akariDiv.classList.add("puzzle", "akari");
 akariDiv.innerHTML = `
-<div class="puzzleName">Akari</div>`;
+<div class="puzzleName"><a href="#akari-rules">Akari</a></div>`;
 akariDiv.appendChild(game.akari.node);
 $container.appendChild(akariDiv);
 game.akari.populate(akariGivens);
@@ -74,7 +74,7 @@ heyawakeDiv.style.gridColumn = 3;
 heyawakeDiv.style.gridRow = 2;
 heyawakeDiv.classList.add("puzzle", "heyawake");
 heyawakeDiv.innerHTML = `
-<div class="puzzleName">Heyawake</div>
+<div class="puzzleName"><a href="#heyawake-rules">Heyawake</a></div>
 <div class="rules">Clues are real only if in<br/>top-left corner of a room</div>`;
 heyawakeDiv.appendChild(game.heyawake.node);
 $container.appendChild(heyawakeDiv);
@@ -86,7 +86,7 @@ nurikuroDiv.style.gridColumn = 4;
 nurikuroDiv.style.gridRow = 2;
 nurikuroDiv.classList.add("puzzle", "nurikabe");
 nurikuroDiv.innerHTML = `
-<div class="puzzleName">Nurikabe+Kurodoko</div>`;
+<div class="puzzleName"><a href="#nurikuro-rules">Nurikabe + Kurodoko</a></div>`;
 nurikuroDiv.appendChild(game.nurikuro.node);
 $container.appendChild(nurikuroDiv);
 game.nurikuro.populate(nurikabeGivens);
@@ -97,7 +97,7 @@ shikakuDiv.style.gridColumn = 2;
 shikakuDiv.style.gridRow = 2;
 shikakuDiv.classList.add("puzzle", "shikaku");
 shikakuDiv.innerHTML = `
-<div class="puzzleName">Shikaku</div>`;
+<div class="puzzleName"><a href="#shikaku-rules">Shikaku</a></div>`;
 shikakuDiv.appendChild(game.shikaku.node);
 $container.appendChild(shikakuDiv);
 game.shikaku.populate(shikakuGivens);
@@ -108,7 +108,7 @@ countryDiv.style.gridColumn = 3;
 countryDiv.style.gridRow = 3;
 countryDiv.classList.add("puzzle", "countryroad");
 countryDiv.innerHTML = `
-<div class="puzzleName">Country Road</div>
+<div class="puzzleName"><a href="#country-road-rules">Country Road</a></div>
 <div class="rules">At most one clue per room</div>`;
 countryDiv.appendChild(game.countryRoad.node);
 $container.appendChild(countryDiv);
@@ -120,7 +120,7 @@ fillominoDiv.style.gridColumn = 4;
 fillominoDiv.style.gridRow = 3;
 fillominoDiv.classList.add("puzzle", "fillomino");
 fillominoDiv.innerHTML = `
-<div class="puzzleName">Fillomino</div>`;
+<div class="puzzleName"><a href="#fillomino-rules">Fillomino</a></div>`;
 fillominoDiv.appendChild(game.fillomino.node);
 $container.appendChild(fillominoDiv);
 game.fillomino.populate(fillominoGivens);
@@ -131,7 +131,7 @@ hitoriDiv.style.gridColumn = 1;
 hitoriDiv.style.gridRow = 4;
 hitoriDiv.classList.add("puzzle", "hitori");
 hitoriDiv.innerHTML = `
-<div class="puzzleName">Hitori</div>`;
+<div class="puzzleName"><a href="#hitorilink-rules">Hitori</a></div>`;
 hitoriDiv.appendChild(game.hitori.node);
 $container.appendChild(hitoriDiv);
 game.hitori.update();
@@ -141,7 +141,7 @@ slitherlinkDiv.style.gridColumn = 2;
 slitherlinkDiv.style.gridRow = 4;
 slitherlinkDiv.classList.add("puzzle", "slitherlink");
 slitherlinkDiv.innerHTML = `
-<div class="puzzleName">Slitherlink</div>
+<div class="puzzleName"><a href="#hitorilink-rules">Slitherlink</a></div>
 <div class="rules">Clue in every cell</div>`;
 slitherlinkDiv.appendChild(game.slitherlink.node);
 $container.appendChild(slitherlinkDiv);
@@ -152,7 +152,7 @@ hitorilinkDiv.style.gridColumn = 1;
 hitorilinkDiv.style.gridRow = 3;
 hitorilinkDiv.classList.add("puzzle", "hitori", "hitorilink");
 hitorilinkDiv.innerHTML = `
-<div class="puzzleName">Hitori + Slitherlink</div>`;
+<div class="puzzleName"><a href="#hitorilink-rules">Hitori + Slitherlink</a></div>`;
 hitorilinkDiv.appendChild(game.hitorilink.node);
 $container.appendChild(hitorilinkDiv);
 game.hitorilink.populate(hitoriGivens);

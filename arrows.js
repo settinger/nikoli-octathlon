@@ -153,11 +153,6 @@ const arrowUpdate = () => {
   arrowDiv.style.height = document.documentElement.scrollHeight + "px";
 
   const widthUnit = game.akari.node.getBoundingClientRect().width;
-  const akariDOM = game.akari.node.getBoundingClientRect();
-  const hitoriDOM = game.hitori.node.getBoundingClientRect();
-  const hitorilinkDOM = game.hitorilink.node.getBoundingClientRect();
-  const shikakuDOM = game.shikaku.node.getBoundingClientRect();
-  const slitherlinkDOM = game.slitherlink.node.getBoundingClientRect();
 
   // Arrow and text for Akari alone
   let akaTL = corner(game.akari.node, "tl");

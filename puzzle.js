@@ -310,6 +310,14 @@ class Puzzle {
           this.clickCell(newCell, event, false);
         });
 
+        // Add interrupt between double-clicks to stop the obnoxious Chrome behavior that highlights text when an SVG is double-clicked
+        newCell.node.addEventListener("mousedown", (event) => {
+          if (event.detail > 1) {
+            event.preventDefault();
+          }
+        });
+
+        // Add mouse hover events
         newCell.node.addEventListener("mouseover", (event) => {
           if (!this.parent.markVertices) {
             document.getElementById(
@@ -546,10 +554,14 @@ class Puzzle {
             } m -1 -1 l 2 2 m -2 0 l 2 -2 `;
           }
           if (cell.column == this.columns - 1 && cell.crosses.right) {
-            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 10 0 `;
+            path += `M ${cell.column * 10 + 10} ${
+              cell.row * 10 + 5
+            } m -1 -1 l 2 2 m -2 0 l 2 -2 `;
           }
           if (cell.row == this.rows - 1 && cell.crosses.bottom) {
-            path += `M ${cell.column * 10 + 5} ${cell.row * 10 + 5} l 0 10 `;
+            path += `M ${cell.column * 10 + 5} ${
+              cell.row * 10 + 10
+            } m -1 -1 l 2 2 m -2 0 l 2 -2 `;
           }
         });
         this.crosses.setAttributes({
