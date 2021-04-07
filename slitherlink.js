@@ -47,7 +47,7 @@ class Slitherlink extends Puzzle {
   // Mark cells: Cycle the values in the cells
   // Mark vertices: toggle loops/crosses
   clickCell(cell, event, leftClick = true) {
-    if (this.parent.markVertices) {
+    if (this.parent.currMark == "vertices") {
       cell.toggleEdge(cell.eventDirection(event), leftClick);
     } else {
       cell.toggleValue(leftClick);

@@ -34,7 +34,7 @@ class Masyu extends Puzzle {
   // If set to mark vertices, toggle loop and cross status
   // If set to mark cells, toggle cell truth status
   clickCell(cell, event, leftClick = true) {
-    if (this.parent.markVertices) {
+    if (this.parent.currMark == "vertices") {
       cell.toggleLoop(cell.eventDirection(event), leftClick);
     } else {
       cell.realClue = !cell.realClue;

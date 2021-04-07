@@ -13,7 +13,7 @@ class Heyawake extends Puzzle {
   // If cell has a clue, toggle cell shadedness (left click) or clue truth (right click)
   // If cell has no clue, toggle cell shadedness
   clickCell(cell, event, leftClick = true) {
-    if (this.parent.markVertices) {
+    if (this.parent.currMark == "vertices") {
       cell.toggleWall(cell.eventDirection(event), leftClick);
     } else if (~cell.value) {
       leftClick ? cell.toggleShading() : cell.toggleCertainty();

@@ -11,8 +11,8 @@ class Corral extends Puzzle {
   // If configured to mark vertices: toggle walls
   // Otherwise, toggle shadedness
   clickCell(cell, event, leftClick = true) {
-    if (this.parent.markVertices) {
-      cell.toggleEdge(cell.eventDirection(event));
+    if (this.parent.currMark == "vertices") {
+      cell.toggleEdge(cell.eventDirection(event), leftClick);
     } else {
       cell.toggleShading(leftClick);
     }

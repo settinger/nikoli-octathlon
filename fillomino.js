@@ -11,7 +11,7 @@ class Fillomino extends Puzzle {
   // If configured to mark vertices: left click toggles walls, right click toggles bridges
   // If configured to mark cells and cell has clue, toggle clue certainty
   clickCell(cell, event, leftClick = true) {
-    if (this.parent.markVertices) {
+    if (this.parent.currMark == "vertices") {
       cell.toggleWall(cell.eventDirection(event), leftClick);
     } else if (~cell.value) {
       cell.toggleCertainty(leftClick);

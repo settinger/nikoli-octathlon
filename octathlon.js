@@ -17,7 +17,9 @@ class Octathlon {
     this.shikaku = new Shikaku(this);
     this.slitherlink = new Slitherlink(this);
 
-    this.markVertices = false;
+    // Toggle between marking cells and marking vertices on puzzle grids
+    this.markPref = "cells";
+    this.currMark = "cells";
 
     // this.node = newSVG("svg");
     // this.node.setAttributes({ viewBox: "-50 -50 1300 1700", width: "100%" });

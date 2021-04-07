@@ -10,14 +10,37 @@ body {
 
 #container {
   display: grid;
-  grid-gap: 5%;
+  grid-gap: 3%;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  grid-auto-rows: minmax(200px, auto);
   text-align: center;
   padding: 4%;
   padding-bottom: 40px;
   min-width: 800px;
   min-height: 200px;
+}
+
+#inputMethodsTop {
+  grid-column: 1;
+  grid-row: 1;
+  grid-column-end: span 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#inputMethodsBottom {
+  grid-column: 1;
+  grid-column-end: span 4;
+  grid-row: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#rules {
+  display: block;
 }
 
 .title {
@@ -31,6 +54,11 @@ body {
 
 p {
   padding: 10px 0;
+}
+
+ul {
+  text-align: left;
+  display: inline-block;
 }
 
 #indicator {

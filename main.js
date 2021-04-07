@@ -5,7 +5,6 @@ const game = new Octathlon(10, 10);
 const $container = $("container");
 const $indicator = $("indicator");
 $container.classList.add("mark-cells");
-$indicator.innerText = "Mark cell centers";
 const $snapshot = $("snapshot");
 $snapshot.addEventListener("click", (e) => game.download());
 const $restore = $("restore");
@@ -17,21 +16,27 @@ const toggle = (e) => {
     (e instanceof KeyboardEvent && e.code == "Space")
   ) {
     e.preventDefault();
-    game.markVertices = !game.markVertices;
+    game.markPref = game.markPref == "vertices" ? "cells" : "vertices";
+    game.currMark = game.markPref;
     $container.classList.toggle("mark-cells");
     $container.classList.toggle("mark-vertices");
-    $indicator.innerText = game.markVertices
-      ? "Mark cell vertices"
-      : "Mark cell centers";
+    $("inputStatus").innerText =
+      game.markPref == "vertices"
+        ? "Current input mostly affects vertices."
+        : "Current input mostly affects cells.";
   }
 };
 document.addEventListener("keypress", toggle);
 $indicator.addEventListener("click", toggle);
 
-/*
-$canvas = $("canvas");
-$canvas.appendChild(game.node);
-*/
+// Generate the text box that indicates current input methods available
+const inputsDivTop = document.createElement("div");
+inputsDivTop.id = "inputMethodsTop";
+$container.appendChild(inputsDivTop);
+
+const inputsDivBottom = document.createElement("div");
+inputsDivBottom.id = "inputMethodsBottom";
+$container.appendChild(inputsDivBottom);
 
 // Generate the grid of puzzles
 
@@ -163,7 +168,7 @@ corralDiv.style.gridColumn = 3;
 corralDiv.style.gridRow = 4;
 corralDiv.classList.add("puzzle", "corral");
 corralDiv.innerHTML = `
-<div class="puzzleName">Corral</div>`;
+<div class="puzzleName"><a href="#corralsyu-rules">Corral</a></div>`;
 corralDiv.appendChild(game.corral.node);
 $container.appendChild(corralDiv);
 game.corral.update();
@@ -173,7 +178,7 @@ masyuDiv.style.gridColumn = 4;
 masyuDiv.style.gridRow = 4;
 masyuDiv.classList.add("puzzle", "masyu");
 masyuDiv.innerHTML = `
-<div class="puzzleName">Masyu</div>`;
+<div class="puzzleName"><a href="#corralsyu-rules">Masyu</a></div>`;
 masyuDiv.appendChild(game.masyu.node);
 $container.appendChild(masyuDiv);
 game.masyu.populate(masyuGivens);
@@ -184,7 +189,7 @@ corralsyuDiv.style.gridColumn = 2;
 corralsyuDiv.style.gridRow = 3;
 corralsyuDiv.classList.add("puzzle", "corralsyu", "corral", "masyu");
 corralsyuDiv.innerHTML = `
-<div class="puzzleName">Corral + Masyu</div>`;
+<div class="puzzleName"><a href="#corralsyu-rules">Corral + Masyu</a></div>`;
 corralsyuDiv.appendChild(game.corralsyu.node);
 $container.appendChild(corralsyuDiv);
 game.corralsyu.populate(corralGivens, masyuGivens);

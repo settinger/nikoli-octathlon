@@ -319,14 +319,14 @@ class Puzzle {
 
         // Add mouse hover events
         newCell.node.addEventListener("mouseover", (event) => {
-          if (!this.parent.markVertices) {
+          if (this.parent.currMark == "cells") {
             document.getElementById(
               "cellstyle"
             ).innerText = `.row${newCell.row}.col${newCell.column} {filter: invert(5%);}`;
           }
         });
         newCell.node.addEventListener("mousemove", (event) => {
-          if (this.parent.markVertices) {
+          if (this.parent.currMark == "vertices") {
             let cellDOM = newCell.node.getBoundingClientRect();
             let [x, y] = [
               event.clientX - cellDOM.left - cellDOM.width / 2,
