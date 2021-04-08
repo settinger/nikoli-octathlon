@@ -149,8 +149,10 @@ const corner = (board, corner, actualCorner = false) => {
 
 const arrowUpdate = () => {
   arrowsGroup.innerHTML = "";
+  document.body.removeChild(arrowDiv);
   arrowDiv.style.width = document.documentElement.scrollWidth + "px";
   arrowDiv.style.height = document.documentElement.scrollHeight + "px";
+  document.body.appendChild(arrowDiv);
 
   const widthUnit = game.akari.node.getBoundingClientRect().width;
 
@@ -248,7 +250,7 @@ const arrowUpdate = () => {
   // Nurikabe and Fillomino arrows
   const nurBR = corner(game.nurikabe.node, "br");
   const filTR = corner(game.fillomino.node, "tr");
-  const nurfil = [filTR[0] - 70, filTR[1] - 0.3 * widthUnit];
+  const nurfil = [filTR[0] - 70, filTR[1] - 50];
   arrowsGroup.appendChild(bezierArrow(nurBR, filTR, false, 0.2));
   arrowsGroup.appendChild(textNode(nurfil, "Shaded Nurikabe ⇔ Fillomino liar"));
 
